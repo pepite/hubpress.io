@@ -52,7 +52,9 @@
           jQuery('ago.ago').each(function(){
             var element = jQuery(this).parent();
             element.html( moment(element.text()).fromNow());
+           
           });
+          Prism.highlightAll();
         });
 
       </script>
