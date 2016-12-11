@@ -2,7 +2,7 @@
 
 This is a post and this is ok. This is scala code:
 
-[source, javascript]
+[source, scala]
 ----
 val x = 1
 
