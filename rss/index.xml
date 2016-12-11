@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 11 Dec 2016 22:17:30 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 11 Dec 2016 22:18:05 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -21,4 +21,24 @@ def totalHours = {
 </div>
 <div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</guid><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Sun, 11 Dec 2016 00:00:00 GMT</pubDate></item></channel></rss>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</guid><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Sun, 11 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[My first post]]></title><description><![CDATA[<div class="paragraph">
+<p>This is a post and this is ok. This is scala code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val x = 1
+
+def toDays(hours: Float) = if (hours &gt; 0) Math.ceil((hours / 8) * 4).toFloat / 4f else 0f
+
+  def totalBillableHours = {
+    entries.filter(_.billable).map( time =&gt; TimeUtil.toHours(time.duration.getStandardSeconds)).sum
+  }
+
+  def totalHours = {
+    entries.map( time =&gt; TimeUtil.toHours(time.duration.getStandardSeconds)).sum
+  }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>bla <strong>bla</strong>. Is syntax highlighting working?</p>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/11/My-first-post.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/11/My-first-post.html</guid><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Sun, 11 Dec 2016 00:00:00 GMT</pubDate></item></channel></rss>
