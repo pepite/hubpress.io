@@ -8,14 +8,13 @@ val x = 1
 
 def toDays(hours: Float) = if (hours > 0) Math.ceil((hours / 8) * 4).toFloat / 4f else 0f
 
-  def totalBillableHours = {
-    entries.filter(_.billable).map( time => TimeUtil.toHours(time.duration.getStandardSeconds)).sum
-  }
+def totalBillableHours = {
+  entries.filter(_.billable).map( time => TimeUtil.toHours(time.duration.getStandardSeconds)).sum
+}
 
-  def totalHours = {
-    entries.map( time => TimeUtil.toHours(time.duration.getStandardSeconds)).sum
-  }
-
+def totalHours = {
+  entries.map( time => TimeUtil.toHours(time.duration.getStandardSeconds)).sum
+}
 
 ----
 
