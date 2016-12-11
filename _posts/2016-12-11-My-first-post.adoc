@@ -2,7 +2,7 @@
 
 This is a post and this is ok. This is scala code:
 
-```scala
+```java
 val x = 1
 
 def toDays(hours: Float) = if (hours > 0) Math.ceil((hours / 8) * 4).toFloat / 4f else 0f
