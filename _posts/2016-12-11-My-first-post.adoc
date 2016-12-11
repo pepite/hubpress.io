@@ -1,0 +1,11 @@
+# My first post
+
+This is a post and this souhl be ok. This is scala code:
+
+```
+val x = 1
+
+def toDays(hours: Float) = if (hours > 0) Math.ceil((hours / 8) * 4).toFloat / 4f else 0f
+```
+
+bla *bla*
