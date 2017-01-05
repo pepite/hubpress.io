@@ -2,7 +2,7 @@
 :published_at: 2016-07-15
 :hp-tags: scala, recursion, fp
 
-![](https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg)
+:hp-image:https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg
 
 Recursion is beautiful. As an example, let's consider this perfectly acceptable example of defining the functions `even` and `odd` in Scala, whose semantics you can guess:
 
