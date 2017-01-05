@@ -39,9 +39,9 @@ In the remainder of this post we look at various strategies for preventing recur
 
 ## But what's the problem?
 
-The problem manifests itself in the stack trace: even calls `odd`, then `odd` calls even, which calls `odd` again. Each of these invocations causes the creation of a stack frame, eating away the space that's reserved for them.
+The problem manifests itself in the stack trace: even calls `odd`, then `odd` calls `even`, which calls `odd` again. Each of these invocations causes the creation of a stack frame, eating away the space that's reserved for them.
 
-Keeping all the stack frames would not really be necessary: when even calls `odd`, that is the very last thing that the even function will ever do! When `odd` returns, even itself returns immediately with that same value.
+Keeping all the stack frames would not really be necessary: when `even` calls `odd`, that is the very last thing that the even function will ever do! When `odd` returns, `even` itself returns immediately with that same value.
 
 When we compute `even(500)`, after a bunch of recursive calls, the 501st stack frame will be created, for the invocation of `even(0)`, which returns true, and the 500 method calls that are left on the stack will one after another all return that same value, until the whole stack is unwinded.
 
