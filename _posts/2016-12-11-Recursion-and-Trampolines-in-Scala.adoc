@@ -2,7 +2,8 @@
 
 Recursion is beautiful. As an example, let's consider this perfectly acceptable example of defining the functions `even` and `odd` in Scala, whose semantics you can guess:
 
-```
+[source, scala]
+----
 def even(i: Int): Boolean = i match {
 case 0 => true
 case _ => odd(i - 1)
@@ -11,7 +12,7 @@ def odd(i: Int): Boolean = i match {
 case 0 => false
 case _ => even(i - 1)
 }
-```
+----
 
 We've defined even in a very natural way: an value is `even` when it's zero, or when it's `odd` after subtracting one. `Odd` is defined in a similar way.
 
@@ -56,22 +57,24 @@ Luckily, there is one special case of tail calls which Scala treats differently,
 
 Many recursive algorithms can be rewritten in a tail recursive way. For our even and odd problem, this is a possible solution:
 
-```
+[source, scala]
+----
 def even(i: Int): Boolean = i match {
 case 0 => true
 case 1 => false
 case _ => even(i - 2)
 }
 def odd(i: Int): Boolean = !even(i)
-```
+----
 
 We've rewritten `even` to be tail-recursive, and now Scala will optimize it for us:
 
 ```
 scala> even(500000000)
 res25: Boolean = true
-it no longer blows up for large numbers.
 ```
+it no longer blows up for large numbers.
+
 
 The `@tailrec` annotation is useful in these cases. It does not change how the function will be compiled, but it does trigger an error if the function is not actually tail-recursive. So this will protect you from accidentally changing a function that you want to be tail-recursive function into something that's no longer tail recursive.
 
@@ -83,7 +86,8 @@ Another way of solving the problem of consuming too much stack space, is by movi
 
 Instead of letting the even function recursively call odd, we could also let it return some recipe to it's caller, how to continue with the computation. Let's look at the following code:
 
-```
+[source, scala]
+----
 sealed trait EvenOdd
 case class Done(result: Boolean) extends EvenOdd
 case class Even(value: Int) extends EvenOdd
@@ -96,7 +100,7 @@ def odd(i: Int): EvenOdd = i match {
 case 0 => Done(false)
 case _ => Even(i - 1)
 }
-```
+----
 
 Here we defined a little language, EvenOdd, that can express three things:
 
@@ -107,7 +111,8 @@ Here we defined a little language, EvenOdd, that can express three things:
 
 Finally, we create an interpreter, that will recursively evaluate expressions in this language:
 
-```
+[source, scala]
+----
 // Using Scala's self recursive tail call optimization
 @tailrec
 def run(evenOdd: EvenOdd): Boolean = evenOdd match {
@@ -115,7 +120,7 @@ case Done(result) => result
 case Even(value) => run(even(value))
 case Odd(value) => run(odd(value))
 }
-```
+----
 
 Now we have expressed `even` and `odd` in their natural, mutually recursive way, and we still have a stack safe interpreter:
 
@@ -132,7 +137,8 @@ This strategy is sometimes called trampolining, because instead of creating a bi
 
 There is no need to specialize our little language to computing `even` and `odd`. We can also make a little language that can express recursion in a general way:
 
-```
+[source, scala]
+----
 sealed trait Computation[A]
 class Continue[A](n: => Computation[A]) extends Computation[A] {
 lazy val next = n
@@ -151,7 +157,7 @@ def run[A](computation: Computation[A]): A = computation match {
 case Done(a) => a
 case c: Continue[A] => run(c.next)
 }
-```
+----
 
 ## Recursion and Trampolines in Scala
 
@@ -164,7 +170,8 @@ Note that our run function is no longer tied to computing `even` and `odd`, it c
 
 Something similar in spirit, but with a better implementation is also available in the Scala standard library:
 
-```
+[source, scala]
+----
 import scala.util.control.TailCalls.{ TailRec, done, tailcall }
 def even(i: Int): TailRec[Boolean] = i match {
 case 0 => done(true)
@@ -175,7 +182,7 @@ case 0 => done(false)
 case _ => tailcall(even(i - 1))
 }
 even(3000).result
-```
+----
 
 ## Comparing performance
 
