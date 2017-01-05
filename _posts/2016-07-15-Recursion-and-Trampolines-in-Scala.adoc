@@ -4,7 +4,6 @@
 
 :hp-image: https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg
 
-image::https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg[computer,500]
 
 Recursion is beautiful. As an example, let's consider this perfectly acceptable example of defining the functions `even` and `odd` in Scala, whose semantics you can guess:
 
