@@ -5,12 +5,13 @@ Recursion is beautiful. As an example, let's consider this perfectly acceptable 
 [source, scala]
 ----
 def even(i: Int): Boolean = i match {
-case 0 => true
-case _ => odd(i - 1)
+  case 0 => true
+  case _ => odd(i - 1)
 }
+
 def odd(i: Int): Boolean = i match {
-case 0 => false
-case _ => even(i - 1)
+  case 0 => false
+  case _ => even(i - 1)
 }
 ----
 
@@ -89,16 +90,19 @@ Instead of letting the even function recursively call odd, we could also let it 
 [source, scala]
 ----
 sealed trait EvenOdd
+
 case class Done(result: Boolean) extends EvenOdd
 case class Even(value: Int) extends EvenOdd
 case class Odd(value: Int) extends EvenOdd
+
 def even(i: Int): EvenOdd = i match {
-case 0 => Done(true)
-case _ => Odd(i - 1)
+  case 0 => Done(true)
+  case _ => Odd(i - 1)
 }
+
 def odd(i: Int): EvenOdd = i match {
-case 0 => Done(false)
-case _ => Even(i - 1)
+  case 0 => Done(false)
+  case _ => Even(i - 1)
 }
 ----
 
@@ -116,9 +120,9 @@ Finally, we create an interpreter, that will recursively evaluate expressions in
 // Using Scala's self recursive tail call optimization
 @tailrec
 def run(evenOdd: EvenOdd): Boolean = evenOdd match {
-case Done(result) => result
-case Even(value) => run(even(value))
-case Odd(value) => run(odd(value))
+  case Done(result) => result
+  case Even(value) => run(even(value))
+  case Odd(value) => run(odd(value))
 }
 ----
 
@@ -140,23 +144,27 @@ There is no need to specialize our little language to computing `even` and `odd`
 [source, scala]
 ----
 sealed trait Computation[A]
+
 class Continue[A](n: => Computation[A]) extends Computation[A] {
-lazy val next = n
+  lazy val next = n
 }
+
 case class Done[A](result: A) extends Computation[A]
-def even(i: Int): Computation[Boolean] = i match {
-case 0 => Done(true)
-case _ => new Continue(odd(i - 1))
-}
-def odd(i: Int): Computation[Boolean] = i match {
-case 0 => Done(false)
-case _ => new Continue(even(i - 1))
-}
-@tailrec
-def run[A](computation: Computation[A]): A = computation match {
-case Done(a) => a
-case c: Continue[A] => run(c.next)
-}
+  def even(i: Int): Computation[Boolean] = i match {
+    case 0 => Done(true)
+    case _ => new Continue(odd(i - 1))
+  }
+
+  def odd(i: Int): Computation[Boolean] = i match {
+    case 0 => Done(false)
+    case _ => new Continue(even(i - 1))
+  }
+
+  @tailrec
+  def run[A](computation: Computation[A]): A = computation match {
+    case Done(a) => a
+    case c: Continue[A] => run(c.next) 
+  }
 ----
 
 ## Recursion and Trampolines in Scala
@@ -173,14 +181,17 @@ Something similar in spirit, but with a better implementation is also available 
 [source, scala]
 ----
 import scala.util.control.TailCalls.{ TailRec, done, tailcall }
+
 def even(i: Int): TailRec[Boolean] = i match {
-case 0 => done(true)
-case _ => tailcall(odd(i - 1))
+  case 0 => done(true)
+  case _ => tailcall(odd(i - 1))
 }
+ 
 def odd(i: Int): TailRec[Boolean] = i match {
-case 0 => done(false)
-case _ => tailcall(even(i - 1))
+  case 0 => done(false)
+  case _ => tailcall(even(i - 1))
 }
+
 even(3000).result
 ----
 
