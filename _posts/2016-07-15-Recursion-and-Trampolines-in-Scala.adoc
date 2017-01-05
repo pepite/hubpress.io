@@ -1,4 +1,6 @@
-# Recursion and Trampolines in Scala
+= Recursion and Trampolines in Scala
+:published_at: 2016-07-15
+:hp-tags: scala, recursion, fp
 
 Recursion is beautiful. As an example, let's consider this perfectly acceptable example of defining the functions `even` and `odd` in Scala, whose semantics you can guess:
 
