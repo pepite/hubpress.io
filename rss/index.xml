@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:49:30 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:51:27 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -29,12 +29,13 @@ def totalHours = {
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">def even(i: Int): Boolean = i match {
-case 0 =&gt; true
-case _ =&gt; odd(i - 1)
+  case 0 =&gt; true
+  case _ =&gt; odd(i - 1)
 }
+
 def odd(i: Int): Boolean = i match {
-case 0 =&gt; false
-case _ =&gt; even(i - 1)
+  case 0 =&gt; false
+  case _ =&gt; even(i - 1)
 }</code></pre>
 </div>
 </div>
@@ -140,16 +141,19 @@ res25: Boolean = true</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait EvenOdd
+
 case class Done(result: Boolean) extends EvenOdd
 case class Even(value: Int) extends EvenOdd
 case class Odd(value: Int) extends EvenOdd
+
 def even(i: Int): EvenOdd = i match {
-case 0 =&gt; Done(true)
-case _ =&gt; Odd(i - 1)
+  case 0 =&gt; Done(true)
+  case _ =&gt; Odd(i - 1)
 }
+
 def odd(i: Int): EvenOdd = i match {
-case 0 =&gt; Done(false)
-case _ =&gt; Even(i - 1)
+  case 0 =&gt; Done(false)
+  case _ =&gt; Even(i - 1)
 }</code></pre>
 </div>
 </div>
@@ -180,9 +184,9 @@ case _ =&gt; Even(i - 1)
 <pre class="highlight"><code class="language-scala" data-lang="scala">// Using Scala's self recursive tail call optimization
 @tailrec
 def run(evenOdd: EvenOdd): Boolean = evenOdd match {
-case Done(result) =&gt; result
-case Even(value) =&gt; run(even(value))
-case Odd(value) =&gt; run(odd(value))
+  case Done(result) =&gt; result
+  case Even(value) =&gt; run(even(value))
+  case Odd(value) =&gt; run(odd(value))
 }</code></pre>
 </div>
 </div>
@@ -212,23 +216,27 @@ res1: Boolean = true</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait Computation[A]
+
 class Continue[A](n: =&gt; Computation[A]) extends Computation[A] {
-lazy val next = n
+  lazy val next = n
 }
+
 case class Done[A](result: A) extends Computation[A]
-def even(i: Int): Computation[Boolean] = i match {
-case 0 =&gt; Done(true)
-case _ =&gt; new Continue(odd(i - 1))
-}
-def odd(i: Int): Computation[Boolean] = i match {
-case 0 =&gt; Done(false)
-case _ =&gt; new Continue(even(i - 1))
-}
-@tailrec
-def run[A](computation: Computation[A]): A = computation match {
-case Done(a) =&gt; a
-case c: Continue[A] =&gt; run(c.next)
-}</code></pre>
+  def even(i: Int): Computation[Boolean] = i match {
+    case 0 =&gt; Done(true)
+    case _ =&gt; new Continue(odd(i - 1))
+  }
+
+  def odd(i: Int): Computation[Boolean] = i match {
+    case 0 =&gt; Done(false)
+    case _ =&gt; new Continue(even(i - 1))
+  }
+
+  @tailrec
+  def run[A](computation: Computation[A]): A = computation match {
+    case Done(a) =&gt; a
+    case c: Continue[A] =&gt; run(c.next)
+  }</code></pre>
 </div>
 </div>
 </div>
@@ -251,14 +259,17 @@ case c: Continue[A] =&gt; run(c.next)
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">import scala.util.control.TailCalls.{ TailRec, done, tailcall }
+
 def even(i: Int): TailRec[Boolean] = i match {
-case 0 =&gt; done(true)
-case _ =&gt; tailcall(odd(i - 1))
+  case 0 =&gt; done(true)
+  case _ =&gt; tailcall(odd(i - 1))
 }
+
 def odd(i: Int): TailRec[Boolean] = i match {
-case 0 =&gt; done(false)
-case _ =&gt; tailcall(even(i - 1))
+  case 0 =&gt; done(false)
+  case _ =&gt; tailcall(even(i - 1))
 }
+
 even(3000).result</code></pre>
 </div>
 </div>
