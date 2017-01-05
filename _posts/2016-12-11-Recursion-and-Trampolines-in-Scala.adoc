@@ -51,7 +51,7 @@ Unfortunately, the JVM does not support this.
 
 And so Scala, as long as it sticks to JVM method calling semantics, also can not support this.
 
-A bit of light at the end of the tunnel
+## A bit of light at the end of the tunnel
 
 Luckily, there is one special case of tail calls which Scala treats differently, and that is the case of tail recursion. If a method does a tail call to itself, it's called tail recursion, and Scala will rewrite the recursion into a loop that does not consume stack space.
 
