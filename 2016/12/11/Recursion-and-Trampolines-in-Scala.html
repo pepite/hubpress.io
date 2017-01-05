@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1483624116196" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1483624170038" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -111,10 +111,10 @@ at Trampolines$Stack$.odd(trampolines.scala:14)</code></pre>
 <h2 id="_but_what_s_the_problem">But what&#8217;s the problem?</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The problem manifests itself in the stack trace: even calls <code>odd</code>, then <code>odd</code> calls even, which calls <code>odd</code> again. Each of these invocations causes the creation of a stack frame, eating away the space that&#8217;s reserved for them.</p>
+<p>The problem manifests itself in the stack trace: even calls <code>odd</code>, then <code>odd</code> calls <code>even</code>, which calls <code>odd</code> again. Each of these invocations causes the creation of a stack frame, eating away the space that&#8217;s reserved for them.</p>
 </div>
 <div class="paragraph">
-<p>Keeping all the stack frames would not really be necessary: when even calls <code>odd</code>, that is the very last thing that the even function will ever do! When <code>odd</code> returns, even itself returns immediately with that same value.</p>
+<p>Keeping all the stack frames would not really be necessary: when <code>even</code> calls <code>odd</code>, that is the very last thing that the even function will ever do! When <code>odd</code> returns, <code>even</code> itself returns immediately with that same value.</p>
 </div>
 <div class="paragraph">
 <p>When we compute <code>even(500)</code>, after a bunch of recursive calls, the 501st stack frame will be created, for the invocation of <code>even(0)</code>, which returns true, and the 500 method calls that are left on the stack will one after another all return that same value, until the whole stack is unwinded.</p>
@@ -412,8 +412,8 @@ even(3000).result</code></pre>
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1483624116196"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1483624116196"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1483624170038"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1483624170038"></script>
    
   
 </body>
