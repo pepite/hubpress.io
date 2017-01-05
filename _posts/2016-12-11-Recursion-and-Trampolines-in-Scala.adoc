@@ -213,7 +213,7 @@ The specialized trampolining version, with the `EvenOdd` domain specific languag
 
 The general trampoline version that we defined here is about 2 times slower than the specialized version, and about 8 times slower than the stack version.
 
-The TailRec version from the Scala standard library is about 20% faster than our general trampoline, making it about 7 times slower than the stack version.
+The `TailRec` version from the Scala standard library is about 20% faster than our general trampoline, making it about 7 times slower than the stack version.
 
 ## Source code
 
