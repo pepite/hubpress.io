@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:47:23 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:48:36 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -87,9 +87,11 @@ at Trampolines$Stack$.odd(trampolines.scala:14)</code></pre>
 <div class="paragraph">
 <p>And so Scala, as long as it sticks to JVM method calling semantics, also can not support this.</p>
 </div>
-<div class="paragraph">
-<p>A bit of light at the end of the tunnel</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_a_bit_of_light_at_the_end_of_the_tunnel">A bit of light at the end of the tunnel</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Luckily, there is one special case of tail calls which Scala treats differently, and that is the case of tail recursion. If a method does a tail call to itself, it&#8217;s called tail recursion, and Scala will rewrite the recursion into a loop that does not consume stack space.</p>
 </div>
