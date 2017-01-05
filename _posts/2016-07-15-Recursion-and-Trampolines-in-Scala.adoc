@@ -2,8 +2,7 @@
 :published_at: 2016-07-15
 :hp-tags: scala, recursion, fp
 
-
-image::https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg
+![](https://raw.githubusercontent.com/pepite/hubpress.io/gh-pages/images/ordinateur-de-bureau-pc.jpg)
 
 Recursion is beautiful. As an example, let's consider this perfectly acceptable example of defining the functions `even` and `odd` in Scala, whose semantics you can guess:
 
@@ -43,7 +42,7 @@ at Trampolines$Stack$.odd(trampolines.scala:14)
 
 In the remainder of this post we look at various strategies for preventing recursive programs from running out of memory.
 
-## But what's the problem?
+== But what's the problem?
 
 The problem manifests itself in the stack trace: even calls `odd`, then `odd` calls `even`, which calls `odd` again. Each of these invocations causes the creation of a stack frame, eating away the space that's reserved for them.
 
@@ -57,7 +56,7 @@ Unfortunately, the JVM does not support this.
 
 And so Scala, as long as it sticks to JVM method calling semantics, also can not support this.
 
-## A bit of light at the end of the tunnel
+== A bit of light at the end of the tunnel
 
 Luckily, there is one special case of tail calls which Scala treats differently, and that is the case of tail recursion. If a method does a tail call to itself, it's called tail recursion, and Scala will rewrite the recursion into a loop that does not consume stack space.
 
@@ -86,7 +85,7 @@ The `@tailrec` annotation is useful in these cases. It does not change how the f
 
 You can try this out by putting the `@tailrec` annotation on the first and the latest version of even that we've defined.
 
-## Trampolines
+== Trampolines
 
 Another way of solving the problem of consuming too much stack space, is by moving the computation from the stack to the heap.
 
@@ -142,7 +141,7 @@ The disadvantage of this is that this is significantly slower. Unfortunately, we
 
 This strategy is sometimes called trampolining, because instead of creating a big stack, we go up to `even`, then down to run, then up to `odd`, then down to run, then up to `even`, down to run, etcetera. The size of our stack keeps growing and shrinking by one frame for every step in the computation. This looks a lot like going up and down on a trampoline :)
 
-## Generalizing
+== Generalizing
 
 There is no need to specialize our little language to computing `even` and `odd`. We can also make a little language that can express recursion in a general way:
 
@@ -172,7 +171,7 @@ case class Done[A](result: A) extends Computation[A]
   }
 ----
 
-## Recursion and Trampolines in Scala
+== Recursion and Trampolines in Scala
 
 
 Here our even and odd functions don't return domain specific values, but a general value that indicates whether the computation is done, or whether more steps are needed. The latter includes the next step as a by-name parameter, that the tail recursive runner function can call.
@@ -200,7 +199,7 @@ def odd(i: Int): TailRec[Boolean] = i match {
 even(3000).result
 ----
 
-## Comparing performance
+== Comparing performance
 
 I compared the performance of these solutions with JMH, and these are the results:
 
@@ -220,6 +219,6 @@ The general trampoline version that we defined here is about 2 times slower than
 
 The `TailRec` version from the Scala standard library is about 20% faster than our general trampoline, making it about 7 times slower than the stack version.
 
-## Source code
+== Source code
 
 The source code of the benchmarks (and all the code), is available on https://github.com/eamelink/scala-trampolines
