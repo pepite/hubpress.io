@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:41:45 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:45:36 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -28,7 +28,7 @@ def totalHours = {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>def even(i: Int): Boolean = i match {
+<pre class="highlight"><code class="language-scala" data-lang="scala">def even(i: Int): Boolean = i match {
 case 0 =&gt; true
 case _ =&gt; odd(i - 1)
 }
@@ -98,7 +98,7 @@ at Trampolines$Stack$.odd(trampolines.scala:14)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>def even(i: Int): Boolean = i match {
+<pre class="highlight"><code class="language-scala" data-lang="scala">def even(i: Int): Boolean = i match {
 case 0 =&gt; true
 case 1 =&gt; false
 case _ =&gt; even(i - 2)
@@ -112,9 +112,11 @@ def odd(i: Int): Boolean = !even(i)</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code>scala&gt; even(500000000)
-res25: Boolean = true
-it no longer blows up for large numbers.</code></pre>
+res25: Boolean = true</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p>it no longer blows up for large numbers.</p>
 </div>
 <div class="paragraph">
 <p>The <code>@tailrec</code> annotation is useful in these cases. It does not change how the function will be compiled, but it does trigger an error if the function is not actually tail-recursive. So this will protect you from accidentally changing a function that you want to be tail-recursive function into something that&#8217;s no longer tail recursive.</p>
@@ -135,7 +137,7 @@ it no longer blows up for large numbers.</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>sealed trait EvenOdd
+<pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait EvenOdd
 case class Done(result: Boolean) extends EvenOdd
 case class Even(value: Int) extends EvenOdd
 case class Odd(value: Int) extends EvenOdd
@@ -173,7 +175,7 @@ case _ =&gt; Even(i - 1)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>// Using Scala's self recursive tail call optimization
+<pre class="highlight"><code class="language-scala" data-lang="scala">// Using Scala's self recursive tail call optimization
 @tailrec
 def run(evenOdd: EvenOdd): Boolean = evenOdd match {
 case Done(result) =&gt; result
@@ -207,7 +209,7 @@ res1: Boolean = true</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>sealed trait Computation[A]
+<pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait Computation[A]
 class Continue[A](n: =&gt; Computation[A]) extends Computation[A] {
 lazy val next = n
 }
@@ -246,7 +248,7 @@ case c: Continue[A] =&gt; run(c.next)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import scala.util.control.TailCalls.{ TailRec, done, tailcall }
+<pre class="highlight"><code class="language-scala" data-lang="scala">import scala.util.control.TailCalls.{ TailRec, done, tailcall }
 def even(i: Int): TailRec[Boolean] = i match {
 case 0 =&gt; done(true)
 case _ =&gt; tailcall(odd(i - 1))
