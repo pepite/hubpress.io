@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:51:27 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:52:15 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -300,7 +300,7 @@ even(3000).result</code></pre>
 <p>The general trampoline version that we defined here is about 2 times slower than the specialized version, and about 8 times slower than the stack version.</p>
 </div>
 <div class="paragraph">
-<p>The TailRec version from the Scala standard library is about 20% faster than our general trampoline, making it about 7 times slower than the stack version.</p>
+<p>The <code>TailRec</code> version from the Scala standard library is about 20% faster than our general trampoline, making it about 7 times slower than the stack version.</p>
 </div>
 </div>
 </div>
