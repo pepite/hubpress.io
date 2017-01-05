@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:48:36 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 13:49:30 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
 <p>This is a post and this is ok. This is scala code:</p>
 </div>
 <div class="listingblock">
@@ -70,10 +70,10 @@ at Trampolines$Stack$.odd(trampolines.scala:14)</code></pre>
 <h2 id="_but_what_s_the_problem">But what&#8217;s the problem?</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The problem manifests itself in the stack trace: even calls <code>odd</code>, then <code>odd</code> calls even, which calls <code>odd</code> again. Each of these invocations causes the creation of a stack frame, eating away the space that&#8217;s reserved for them.</p>
+<p>The problem manifests itself in the stack trace: even calls <code>odd</code>, then <code>odd</code> calls <code>even</code>, which calls <code>odd</code> again. Each of these invocations causes the creation of a stack frame, eating away the space that&#8217;s reserved for them.</p>
 </div>
 <div class="paragraph">
-<p>Keeping all the stack frames would not really be necessary: when even calls <code>odd</code>, that is the very last thing that the even function will ever do! When <code>odd</code> returns, even itself returns immediately with that same value.</p>
+<p>Keeping all the stack frames would not really be necessary: when <code>even</code> calls <code>odd</code>, that is the very last thing that the even function will ever do! When <code>odd</code> returns, <code>even</code> itself returns immediately with that same value.</p>
 </div>
 <div class="paragraph">
 <p>When we compute <code>even(500)</code>, after a bunch of recursive calls, the 501st stack frame will be created, for the invocation of <code>even(0)</code>, which returns true, and the 500 method calls that are left on the stack will one after another all return that same value, until the whole stack is unwinded.</p>
