@@ -1,27 +1,135 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 05 Jan 2017 14:47:57 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[my second post]]></title><description><![CDATA[<div class="paragraph">
-<p>This is a post and this is ok. This is scala code:</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 08 Jan 2017 21:15:44 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>In this post we look at an alternative approach using GitLab which offers both the features of the aforementioned services: git hosting and continuous integration.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this post we specifically focus on Scala projects with SBT as the build tool. Let’s assume we have an SBT project that contains tests and is hosted on GitLab. Now we have to tell GitLab that we want CI. We do this by adding a <code>.gitlab-cy.yml</code> file in the root directory of our project.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_code_gitlab_ci_yml_code_file">The <code>.gitlab-ci.yml</code> File</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Builds are run in Docker and therefore we have to specify in the .gitlab-ci.yml file which Docker image we want to use. Additionally we define some commands before our tests are run. We use the Java 8 image and make sure SBT is installed and available in our builds:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">val x = 1
+<pre class="highlight"><code class="language-yamel" data-lang="yamel">image: java:8
 
-def toDays(hours: Float) = if (hours &gt; 0) Math.ceil((hours / 8) * 4).toFloat / 4f else 0f
-
-def totalBillableHours = {
-  entries.filter(_.billable).map( time =&gt; TimeUtil.toHours(time.duration.getStandardSeconds)).sum
-}
-
-def totalHours = {
-  entries.map( time =&gt; TimeUtil.toHours(time.duration.getStandardSeconds)).sum
-}</code></pre>
+before_script:
+  # Enable the usage of sources over https
+  - apt-get update -yqq
+  - apt-get install apt-transport-https -yqq
+  # Add keyserver for SBT
+  - echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
+  - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+  # Install SBT
+  - apt-get update -yqq
+  - apt-get install sbt -yqq
+  # Log the sbt version
+  - sbt sbt-version</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>bla <strong>bla</strong>. Is syntax highlighting working?# My first post</p>
+<p>Now let’s define the stages we want to use. We add the test stage with the following lines:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>stages:
+  - test</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>This is a post and this is ok. This is scala code:</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/11/my-second-post.html</guid><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Sun, 11 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Recursion and Trampolines in Scala]]></title><description><![CDATA[<div id="preamble">
+<p>At last, we define a job in the test stage that executes the the tests in our project:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>test:
+  stage: test
+  script:
+    # Execute your project's tests
+    - sbt clean test</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Builds within the same stage run in parallel and the jobs in a next stage are started after all previous stages are successfully finished. We can define as much stages and builds as we want. Together, they are called a pipeline.</p>
+</div>
+<div class="paragraph">
+<p>After we commit and push the <code>.gitlab-ci.yml</code> file to GitLab, CI is enabled and the pipeline is executed on every new push to the project.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_measuring_test_coverage">Measuring Test Coverage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To display the test coverage of our test job we need to take two steps:</p>
+</div>
+<div class="paragraph">
+<p>Add test coverage measuring in our SBT project.</p>
+</div>
+<div class="paragraph">
+<p>Instruct GitLab how to extract the coverage percentage from the build trace.</p>
+</div>
+<div class="paragraph">
+<p>We measure test coverage by using the SBT plugin sbt-scoverage. Add the following line to <code>/project/plugins.sbt</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can now measure test coverage with sbt clean coverage test coverageReport. We change this in <code>.gitlab-ci.yml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>test:
+  stage: test
+  script:
+    # Execute your project's tests and measure test coverage
+    - sbt clean coverage test coverageReport</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And in our project settings under CI/CD pipelines &gt; Test coverage parsing we add the following regular expression: Coverage was <code>\[\d+.\d+\%\]</code>. This enables GitLab to extract the coverage percentage from a build trace and display it next the the build results.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_source_code">Source Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The source code of a demo SBT project implementing the steps described in this post can be found here:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://gitlab.com/jasperdenkers/lunatech-demo-ci-scala-sbt" class="bare">https://gitlab.com/jasperdenkers/lunatech-demo-ci-scala-sbt</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_s_next">What’s Next?</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Next week we are going a step further and we implement continuous delivery (CD) in GitLab with the Play Framework and Heroku.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_references">References</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="http://docs.gitlab.com/ce/ci/" class="bare">http://docs.gitlab.com/ce/ci/</a></p>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/11/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/11/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</guid><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Sun, 11 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Recursion and Trampolines in Scala]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recursion is beautiful. As an example, let&#8217;s consider this perfectly acceptable example of defining the functions <code>even</code> and <code>odd</code> in Scala, whose semantics you can guess:</p>
