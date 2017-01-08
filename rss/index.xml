@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 08 Jan 2017 21:15:44 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 08 Jan 2017 21:18:42 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.</p>
 </div>
-<div class="literalblock">
-<div class="content">
-<pre>In this post we look at an alternative approach using GitLab which offers both the features of the aforementioned services: git hosting and continuous integration.</pre>
-</div>
+<div class="paragraph">
+<p>In this post we look at an alternative approach using GitLab which offers both the features of the aforementioned services: git hosting and continuous integration.</p>
 </div>
 <div class="paragraph">
 <p>In this post we specifically focus on Scala projects with SBT as the build tool. Let’s assume we have an SBT project that contains tests and is hosted on GitLab. Now we have to tell GitLab that we want CI. We do this by adding a <code>.gitlab-cy.yml</code> file in the root directory of our project.</p>
@@ -21,7 +19,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-yamel" data-lang="yamel">image: java:8
+<pre class="highlight"><code class="language-yml" data-lang="yml">image: java:8
 
 before_script:
   # Enable the usage of sources over https
@@ -42,8 +40,8 @@ before_script:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>stages:
-  - test</pre>
+<pre class="highlight"><code class="language-yml" data-lang="yml">stages:
+  - test</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -51,11 +49,11 @@ before_script:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>test:
+<pre class="highlight"><code class="language-yml" data-lang="yml">test:
   stage: test
   script:
     # Execute your project's tests
-    - sbt clean test</pre>
+    - sbt clean test</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -83,7 +81,7 @@ before_script:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")</pre>
+<pre class="highlight"><code class="language-yml" data-lang="yml">addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -91,11 +89,11 @@ before_script:
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>test:
+<pre class="highlight"><code class="language-yml" data-lang="yml">test:
   stage: test
   script:
     # Execute your project's tests and measure test coverage
-    - sbt clean coverage test coverageReport</pre>
+    - sbt clean coverage test coverageReport</code></pre>
 </div>
 </div>
 <div class="paragraph">
