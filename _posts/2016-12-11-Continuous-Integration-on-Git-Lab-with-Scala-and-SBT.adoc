@@ -2,7 +2,7 @@
 
 With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.
 
- In this post we look at an alternative approach using GitLab which offers both the features of the aforementioned services: git hosting and continuous integration.
+In this post we look at an alternative approach using GitLab which offers both the features of the aforementioned services: git hosting and continuous integration.
 
 In this post we specifically focus on Scala projects with SBT as the build tool. Let’s assume we have an SBT project that contains tests and is hosted on GitLab. Now we have to tell GitLab that we want CI. We do this by adding a `.gitlab-cy.yml` file in the root directory of our project.
 
@@ -12,7 +12,7 @@ In this post we specifically focus on Scala projects with SBT as the build tool.
 
 Builds are run in Docker and therefore we have to specify in the .gitlab-ci.yml file which Docker image we want to use. Additionally we define some commands before our tests are run. We use the Java 8 image and make sure SBT is installed and available in our builds:
 
-[source, yamel]
+[source, yml]
 ----
 image: java:8
 
@@ -32,6 +32,7 @@ before_script:
 
 Now let’s define the stages we want to use. We add the test stage with the following lines:
 
+[source, yml]
 ----
 stages:
   - test
@@ -39,6 +40,7 @@ stages:
 
 At last, we define a job in the test stage that executes the the tests in our project:
 
+[source, yml]
 ----
 test:
   stage: test
@@ -63,12 +65,14 @@ Instruct GitLab how to extract the coverage percentage from the build trace.
 
 We measure test coverage by using the SBT plugin sbt-scoverage. Add the following line to `/project/plugins.sbt`:
 
+[source, yml]
 ----
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.5")
 ----
 
 You can now measure test coverage with sbt clean coverage test coverageReport. We change this in `.gitlab-ci.yml`:
 
+[source, yml]
 ----
 test:
   stage: test
