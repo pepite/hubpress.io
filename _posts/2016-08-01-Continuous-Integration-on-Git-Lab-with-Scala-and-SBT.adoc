@@ -2,7 +2,7 @@
 :published_at: 2016-08-01
 :hp-tags: gitlabs, git, CI
 
-:hp-image: https://prismic-io.s3.amazonaws.com/lunatech/43bcfef72ccd11b6d8ba1662c778790f97f7b3be_it.jpg
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F17ed054b-273c-4832-b4a5-2d1051795389_it.jpg
 
 With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.
 
