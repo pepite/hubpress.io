@@ -1,7 +1,7 @@
 # Functional Rotterdam - 5th Edition
 
 :published_at: 2016-01-04
-:hp-tags: scala, clojure, fp
+:hp-tags: fp
 
 Every first Tuesday of the month, at Lunatech we are organize a meetup focussed on Functional Programming. Tomorrow is the 5th edition of the event. You can join the fun by going to our [meetup page](http://www.meetup.com/Functional-Rotterdam/).
 
