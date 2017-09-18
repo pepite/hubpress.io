@@ -5,7 +5,9 @@
 
 Every first Tuesday of the month, at Lunatech we are organize a meetup focussed on Functional Programming. Tomorrow is the 5th edition of the event. You can join the fun by going to our [meetup page](http://www.meetup.com/Functional-Rotterdam/).
 
-This is an informal event where we share our experience of using functional programing in our projects and learn from others who work in different languages. In the past we had presentations about Scala, Spark, Elm, Frege apart from a coding dojo at the last event. 
+This is an informal event where we share our experience of using functional programing in our projects and learn from others who work in different languages. In the past we had presenations about Scala, Spark, Elm, Frege apart from a coding dojo at the last event. 
 
 Do join us by RSVPing on the [meetup page](http://www.meetup.com/Functional-Rotterdam/)!
+
+
 
