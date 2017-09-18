@@ -35,8 +35,8 @@ If we want to find the `User` with help of the Criteria API it becomes this piec
 ----
 try {
     CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
-    Root&lt;User&gt; user = query.from(User.class);
+    CriteriaQuery<User> query = cb.createQuery(User.class);
+    Root<User> user = query.from(User.class);
     query.where(cb.equal(user.get("username"), "foo"));
     return JPA.em().createQuery(query).getSingleResult();
 } catch (NoResultException nre) {
@@ -67,7 +67,7 @@ Would have the following metamodel class:
 ----
 @StaticMetamodel(User.class)
 public abstract class User_ {
-    public static volatile SingularAttribute&lt;User, String&gt; username;
+    public static volatile SingularAttribute<User, String> username;
 }
 ----
 
