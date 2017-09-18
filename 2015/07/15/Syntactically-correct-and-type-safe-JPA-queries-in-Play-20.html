@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505737707254" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505737863944" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -80,7 +80,7 @@ null
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">try {
+<pre class="highlight"><code class="language-java" data-lang="java">try {
     return JPA.em()
         .createQuery("from User where username = :username", User.class)
         .setParameter("username", "foo").getSingleResult();
@@ -103,20 +103,20 @@ null
 <div class="paragraph">
 <p>If we want to find the <code>User</code> with help of the Criteria API it becomes this piece of code:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight java %}
-try {
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">try {
     CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
-    Root&lt;User&gt; user = query.from(User.class);
+    CriteriaQuery&amp;lt;User&amp;gt; query = cb.createQuery(User.class);
+    Root&amp;lt;User&amp;gt; user = query.from(User.class);
     query.where(cb.equal(user.get("username"), "foo"));
     return JPA.em().createQuery(query).getSingleResult();
 } catch (NoResultException nre) {
     return null;
 } catch (NonUniqueResultException nure) {
     return null;
-}
-{% endhighlight %}</p>
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Here the compiler will give us an error if we write <code>Uzer.class</code> instead of <code>User.class</code>. So more syntax checking. But as you probably already noticed, <code>user.get("username")</code> is still not checked for correct syntax. Our code will successfully compile if we replace <code>username</code> with <code>uzrname</code>. This is because the compiler doesn’t know if <code>uzrname</code> is a property of the <code>User</code> class. So we need more syntax checking to prevent these kind of errors. With the help of Java Persistence Metamodel API we can create fully syntactically checked queries.</p>
@@ -127,41 +127,43 @@ try {
 <div class="paragraph">
 <p>A metamodel class is a class that represents the datastructure of the corresponding model class. For example, this model class:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight java %}
-@Entity
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@Entity
 public class User {
     public Long id;
     public String username;
-}
-{% endhighlight %}</p>
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Would have the following metamodel class:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight java %}
-@StaticMetamodel(User.class)
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">@StaticMetamodel(User.class)
 public abstract class User_ {
-    public static volatile SingularAttribute&lt;User, String&gt; username;
-}
-{% endhighlight %}
-Now we are able to create a type-safe query:</p>
+    public static volatile SingularAttribute&amp;lt;User, String&amp;gt; username;
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
-<p>{% highlight java %}
-try {
+<p>Now we are able to create a type-safe query:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">try {
     CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
-    Root&lt;User&gt; user = query.from(User.class);
+    CriteriaQuery&amp;lt;User&amp;gt; query = cb.createQuery(User.class);
+    Root&amp;lt;User&amp;gt; user = query.from(User.class);
     query.where(cb.equal(user.get(User_.username), "foo"));
     return JPA.em().createQuery(query).getSingleResult();
 } catch (NoResultException nre) {
     return null;
 } catch (NonUniqueResultException nure) {
     return null;
-}
-{% endhighlight %}</p>
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>These metamodels are pretty useful because our queries are syntactically correct and type-safe&#33; Syntactically correct because all the syntax is checked. We will get an error is we replace <code>username</code> by <code>uzername</code>. So if we, for example, rename a variable, the compiler will tell us which queries we forgot to update. We won’t get a runtime error.</p>
@@ -172,20 +174,20 @@ try {
 <div class="paragraph">
 <p>Because of the metamodels, the compiler knows the type of the variables. So you can’t for example do:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight java %}
-try {
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">try {
     CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
-    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
-    Root&lt;User&gt; user = query.from(User.class);
+    CriteriaQuery&amp;lt;User&amp;gt; query = cb.createQuery(User.class);
+    Root&amp;lt;User&amp;gt; user = query.from(User.class);
     query.like(cb.like(user.get(User_.id), "1"));
     return JPA.em().createQuery(query).getSingleResult();
 } catch (NoResultException nre) {
     return null;
 } catch (NonUniqueResultException nure) {
     return null;
-}
-{% endhighlight %}</p>
+}</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>This query won’t compile because the <code>like</code> method needs a <code>Expression&lt;String&gt;</code> as first parameter and <code>id</code> is a <code>Expression&lt;Long&gt;</code>.</p>
@@ -199,22 +201,22 @@ try {
 <div class="paragraph">
 <p>A way to generate our metamodels is by using the <code>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</code>. The processor will automatically run if the hibernate-jpamodelgen.jar is added to the classpath and when you are using JDK 6. So we add a project dependecy to our Build.scala:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight scala %}
-val appDependencies = Seq(
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">val appDependencies = Seq(
     "org.hibernate" % "hibernate-jpamodelgen" % "1.2.0.Final"
-)
-{% endhighlight %}</p>
+)</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>And specify a folder where the generated source files are placed. This is done by passing an argument to the Java compiler. Passing an argument is also done in Build.scala:</p>
 </div>
-<div class="paragraph">
-<p>{% highlight scala %}
-val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
     javacOptions ++= Seq("-s", "metamodel")
-)
-{% endhighlight %}</p>
+)</code></pre>
+</div>
 </div>
 <div class="paragraph">
 <p>Note that the provided folder must exist, the Java compiler won’t generate it for you. So it is probably not a good idea to put the metamodels in our target folder, because its contents are deleted when the the <code>play clean</code> command is run.</p>
@@ -308,8 +310,8 @@ val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).se
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505737707254"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505737707254"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505737863944"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505737863944"></script>
    
   
 </body>
