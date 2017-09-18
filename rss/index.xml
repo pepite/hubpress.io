@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 18 Sep 2017 14:29:25 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
-<p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Team Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Mon, 18 Sep 2017 15:20:50 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
 <p>One of Scala&#8217;s main selling points is its interoperability with Java.</p>
@@ -428,7 +428,27 @@ even(3000).result</code></pre>
 <p>The source code of the benchmarks (and all the code), is available on <a href="https://github.com/eamelink/scala-trampolines" class="bare">https://github.com/eamelink/scala-trampolines</a></p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ recursion]]></category><category><![CDATA[ fp]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Fri, 15 Jul 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Syntactically correct and type-safe JPA queries in Play 2.0]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ recursion]]></category><category><![CDATA[ fp]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Fri, 15 Jul 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Lunatech management realises MBO]]></title><description><![CDATA[<div class="paragraph">
+<p>Ray Kemp and Nicolas Leroux, jointly CEO, have successfully realized a management buy-out (“MBO”) of Lunatech Labs BV (“Lunatech”). Also, some staff members acquired a small stake in the company in this transaction. Lunatech is a Dutch IT service provider specialised in system integration, customised software implementation and web applications.</p>
+</div>
+<div class="paragraph">
+<p>Main Corporate Finance has structured the MBO and arranged the debt financing. Bank financing has been provided by Rabobank. The transaction was partly financed with a mezzanine loan provided by Main Mezzanine Capital.Lunatech stands out in linking and structuring applications between back-end and front-end. Lunatech provides support for complex IT system integration and migration projects and they support IT departments of organisations. The company offers high quality solutions including consultancy and supplying project teams of Scala professionals.</p>
+</div>
+<div class="paragraph">
+<p>Lunatech was founded in 1993 and located in Rotterdam. Lunatech provides its services to proven customers in the Netherlands and France, as for example: ING, SDU, Alcatel, Disney and UPS.</p>
+</div>
+<div class="paragraph">
+<p>The strength of Lunatech is also recognised by the investors, says Lars van ‘t Hoenderdaal: “Lunatech is a very nice company with a strong management team and international growth potential. We experienced great interest among our funders to participate in this mezzanine proposition.”</p>
+</div>
+<div class="paragraph">
+<p>After reaching agreement on the transaction structure and financing structure, the transaction has been completed within 4 weeks. Rabobank has also shown their strength by acting quickly.</p>
+</div>
+<div class="paragraph">
+<p>Ray Kemp, CEO Lunatech, is very satisfied with the realised MBO: “Due to funding from the bank and mezzanine we were able to realise the MBO without a private equity investor. In this way we can realise our growth independently.”</p>
+</div>
+<div class="paragraph">
+<p>Main Mezzanine Capital is part of Main Capital Partners, an investment and financing company, as well as a corporate finance advisor, with a focus on growing and profitable companies in the TMT sector in the Netherlands. Main Mezzanine Capital is funded by its own shareholders, wealthy individuals, family offices and (former) entrepreneurs, who like to invest in companies with an interesting risk-return profile.</p>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2015/22/12/Lunatech-management-realises-MBO.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2015/22/12/Lunatech-management-realises-MBO.html</guid><category><![CDATA[company]]></category><pubDate>Invalid Date</pubDate></item><item><title><![CDATA[Syntactically correct and type-safe JPA queries in Play 2.0]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>For all three approaches we’ll use the same use case: find a <code>User</code> object by its ‘username’ property.</p>
