@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Syntactically correct and type-safe JPA queries in Play 2.0</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505737707254" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Syntactically correct and type-safe JPA queries in Play 2.0" />
+    <meta property="og:description" content="For all three approaches we’ll use the same use case: find a User object by its ‘username’ property. Java Persistence API query language An easy way to read data from our database is by creating a ‘dynamic query’ with use of the Java Persistance API (JPA) query language, a" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html" />
+    <meta property="article:tag" content="scala" />
+    <meta property="article:tag" content=" recursion" />
+    <meta property="article:tag" content=" fp" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Syntactically correct and type-safe JPA queries in Play 2.0" />
+    <meta name="twitter:description" content="For all three approaches we’ll use the same use case: find a User object by its ‘username’ property. Java Persistence API query language An easy way to read data from our database is by creating a ‘dynamic query’ with use of the Java Persistance API (JPA) query language, a" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-scala tag-recursion tag-fp nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-scala tag-recursion tag-fp">
+
+        <header class="post-header">
+            <h1 class="post-title">Syntactically correct and type-safe JPA queries in Play 2.0</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2015-07-15">15 July 2015</time>  on <a href="https://pepite.github.io/hubpress.io/tag/scala/">scala</a>, <a href="https://pepite.github.io/hubpress.io/tag/recursion/"> recursion</a>, <a href="https://pepite.github.io/hubpress.io/tag/fp/"> fp</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>For all three approaches we’ll use the same use case: find a <code>User</code> object by its ‘username’ property.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_java_persistence_api_query_language">Java Persistence API query language</h3>
+<div class="paragraph">
+<p>An easy way to read data from our database is by creating a ‘dynamic query’ with use of the Java Persistance API (JPA) query language, a string-based query language. To find a <code>User</code> by username we would write something like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">try {
+    return JPA.em()
+        .createQuery("from User where username = :username", User.class)
+        .setParameter("username", "foo").getSingleResult();
+} catch (NoResultException nre) {
+    return null;
+} catch (NonUniqueResultException nure) {
+    return null;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The problem with this example is syntax checking. The query language is not checked at compile time, so if we write <code>from Uzer</code> instead of <code>from User</code> no compile-time errors will occur. However, because the query is incorrect, we &lt;em&gt;will&lt;/em&gt; get a runtime error. To prevent these kind of runtime errors we need a way to create syntactically checked queries. This is where the JPA Criteria API comes in.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jpa_criteria_api">JPA Criteria API</h3>
+<div class="paragraph">
+<p>The Criteria API is an alternative to the query language. It allows us to define object-based queries instead of the string-based approach of the query language. The advantage is that these object-based queries are more syntactically checked.</p>
+</div>
+<div class="paragraph">
+<p>If we want to find the <code>User</code> with help of the Criteria API it becomes this piece of code:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight java %}
+try {
+    CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
+    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
+    Root&lt;User&gt; user = query.from(User.class);
+    query.where(cb.equal(user.get("username"), "foo"));
+    return JPA.em().createQuery(query).getSingleResult();
+} catch (NoResultException nre) {
+    return null;
+} catch (NonUniqueResultException nure) {
+    return null;
+}
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>Here the compiler will give us an error if we write <code>Uzer.class</code> instead of <code>User.class</code>. So more syntax checking. But as you probably already noticed, <code>user.get("username")</code> is still not checked for correct syntax. Our code will successfully compile if we replace <code>username</code> with <code>uzrname</code>. This is because the compiler doesn’t know if <code>uzrname</code> is a property of the <code>User</code> class. So we need more syntax checking to prevent these kind of errors. With the help of Java Persistence Metamodel API we can create fully syntactically checked queries.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jpa_2_0_metamodels">JPA 2.0 Metamodels</h3>
+<div class="paragraph">
+<p>A metamodel class is a class that represents the datastructure of the corresponding model class. For example, this model class:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight java %}
+@Entity
+public class User {
+    public Long id;
+    public String username;
+}
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>Would have the following metamodel class:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight java %}
+@StaticMetamodel(User.class)
+public abstract class User_ {
+    public static volatile SingularAttribute&lt;User, String&gt; username;
+}
+{% endhighlight %}
+Now we are able to create a type-safe query:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight java %}
+try {
+    CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
+    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
+    Root&lt;User&gt; user = query.from(User.class);
+    query.where(cb.equal(user.get(User_.username), "foo"));
+    return JPA.em().createQuery(query).getSingleResult();
+} catch (NoResultException nre) {
+    return null;
+} catch (NonUniqueResultException nure) {
+    return null;
+}
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>These metamodels are pretty useful because our queries are syntactically correct and type-safe&#33; Syntactically correct because all the syntax is checked. We will get an error is we replace <code>username</code> by <code>uzername</code>. So if we, for example, rename a variable, the compiler will tell us which queries we forgot to update. We won’t get a runtime error.</p>
+</div>
+<div class="paragraph">
+<p>The query is also type-safe. Type safety means that the compiler will validate types while compiling. If a wrong type is assigned to a variable an exception is thrown at compile time. As you probably know Play 2.0 is [focused on type safety](<a href="http://www.playframework.org/documentation/2.0/Philosophy" class="bare">http://www.playframework.org/documentation/2.0/Philosophy</a>).</p>
+</div>
+<div class="paragraph">
+<p>Because of the metamodels, the compiler knows the type of the variables. So you can’t for example do:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight java %}
+try {
+    CriteriaBuilder cb = JPA.em().getCriteriaBuilder();
+    CriteriaQuery&lt;User&gt; query = cb.createQuery(User.class);
+    Root&lt;User&gt; user = query.from(User.class);
+    query.like(cb.like(user.get(User_.id), "1"));
+    return JPA.em().createQuery(query).getSingleResult();
+} catch (NoResultException nre) {
+    return null;
+} catch (NonUniqueResultException nure) {
+    return null;
+}
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>This query won’t compile because the <code>like</code> method needs a <code>Expression&lt;String&gt;</code> as first parameter and <code>id</code> is a <code>Expression&lt;Long&gt;</code>.</p>
+</div>
+<div class="paragraph">
+<p>Because it takes some time to write these metamodels by hand, it would be nicer to generate them. The next paragraph will explain how to generate metamodels in Play 2.0.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_jpa_2_0_metamodel_genaration_in_play_2_0">JPA 2.0 Metamodel genaration in Play 2.0</h3>
+<div class="paragraph">
+<p>A way to generate our metamodels is by using the <code>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</code>. The processor will automatically run if the hibernate-jpamodelgen.jar is added to the classpath and when you are using JDK 6. So we add a project dependecy to our Build.scala:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight scala %}
+val appDependencies = Seq(
+    "org.hibernate" % "hibernate-jpamodelgen" % "1.2.0.Final"
+)
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>And specify a folder where the generated source files are placed. This is done by passing an argument to the Java compiler. Passing an argument is also done in Build.scala:</p>
+</div>
+<div class="paragraph">
+<p>{% highlight scala %}
+val main = PlayProject(appName, appVersion, appDependencies, mainLang = JAVA).settings(
+    javacOptions ++= Seq("-s", "metamodel")
+)
+{% endhighlight %}</p>
+</div>
+<div class="paragraph">
+<p>Note that the provided folder must exist, the Java compiler won’t generate it for you. So it is probably not a good idea to put the metamodels in our target folder, because its contents are deleted when the the <code>play clean</code> command is run.</p>
+</div>
+<div class="paragraph">
+<p>Eclipse users can add the metamodel folder to their ‘source folders’ (Project → Properties → Java Build Path → Source → Add Folder) for autocompletion etc.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_conclusion">Conclusion</h3>
+<div class="paragraph">
+<p>Using the Criteria API with metamodels gives us the opportunity to write syntactically correct and type-safe queries. It is also quite easy to generate these metamodels. So with a bit of effort we can get nice object-based, syntactically correct and type-safe queries that cause fewer runtime errors.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sources">Sources</h3>
+<div class="paragraph">
+<p>[JSR-317 - Java Persistence 2.0](<a href="http://jcp.org/aboutJava/communityprocess/final/jsr317/" class="bare">http://jcp.org/aboutJava/communityprocess/final/jsr317/</a>)</p>
+</div>
+<div class="paragraph">
+<p>[Hibernate JPA 2 Metamodel Generator](<a href="http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single" class="bare">http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single</a>)</p>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Syntactically%20correct%20and%20type-safe%20JPA%20queries%20in%20Play%202.0&amp;url=https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505737707254"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505737707254"></script>
+   
+  
+</body>
+</html>
