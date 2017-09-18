@@ -1,0 +1,9 @@
+# Functional Rotterdam-15
+
+Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Team Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).
+
+One of Scala's main selling points is its interoperability with Java.
+
+However, this double-edged sword can be problematic, once you turned into a "functional programmer fundamentalist". This paradigms can make your program not only less beautiful but also harder to understand and reason about. How can we wrap Java libraries in a way that we can still enjoy all the benefits of pure functional programming?
+
+This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one. 
