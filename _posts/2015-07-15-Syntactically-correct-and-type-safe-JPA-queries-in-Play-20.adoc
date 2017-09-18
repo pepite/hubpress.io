@@ -1,9 +1,8 @@
 
 # Syntactically correct and type-safe JPA queries in Play 2.0
 
---
-tag: playframework JPA
---
+:published_at: 2015-07-15
+:hp-tags: scala, recursion, fp
 
 For all three approaches we’ll use the same use case: find a `User` object by its ‘username’ property.
 
@@ -11,7 +10,8 @@ For all three approaches we’ll use the same use case: find a `User` object by 
 
 An easy way to read data from our database is by creating a ‘dynamic query’ with use of the Java Persistance API (JPA) query language, a string-based query language. To find a `User` by username we would write something like:
 
-{% highlight java %}
+[source, scala]
+----
 try {
     return JPA.em()
         .createQuery("from User where username = :username", User.class)
@@ -21,7 +21,7 @@ try {
 } catch (NonUniqueResultException nure) {
     return null;
 }
-{% endhighlight %}
+----
 
 The problem with this example is syntax checking. The query language is not checked at compile time, so if we write `from Uzer` instead of `from User` no compile-time errors will occur. However, because the query is incorrect, we <em>will</em> get a runtime error. To prevent these kind of runtime errors we need a way to create syntactically checked queries. This is where the JPA Criteria API comes in.
 
