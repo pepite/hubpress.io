@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505811329311" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505812667874" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -22,13 +22,13 @@
     <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)" />
-    <meta property="og:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this --- {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;" />
+    <meta property="og:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;a15&quot;" />
     <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html" />
     <meta property="article:tag" content="play" />
     
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)" />
-    <meta name="twitter:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this --- {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;" />
+    <meta name="twitter:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;a15&quot;" />
     <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html" />
     
     <script type="application/ld+json">
@@ -69,11 +69,9 @@ null
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-json" data-lang="json">---
-{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
+<pre class="highlight"><code>{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
 </div>
 </div>
-<hr>
         </section>
 
         <footer class="post-footer">
@@ -144,8 +142,8 @@ null
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505811329311"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505811329311"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505812667874"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505812667874"></script>
    
   
 </body>
