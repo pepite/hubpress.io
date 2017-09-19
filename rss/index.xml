@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 09:17:47 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 09:37:09 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -9,12 +9,91 @@
 </div>
 <div class="paragraph">
 <p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
 <p>It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code>{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_first_approach">First approach</h3>
+<div class="paragraph">
+<p>Since scala 2.11 we can have case class with more than 22 fields, so the following compiles.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>But if we try to use Play [JSON automated mapping](<a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated" class="bare">https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated</a>)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>we get a compiler error</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>&lt;console&gt;:16: error: No unapply or unapplySeq function found       implicit val jsonExampleFormat = Json.format[JsonExample]                                                   ^</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Instead we can use Play-Json extensions(requires play-json &gt;= 2.4)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
+
+jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in Play Json documentation</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_second_approach">Second approach</h3>
+<div class="paragraph">
+<p>I don’t consider having a case class with so many fields a good solution.</p>
+</div>
+<div class="paragraph">
+<p>A better solution is to organize these fields in “logical” embedded case classes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
+
+case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  )case class C (    a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )case class JsonExample2 (    a : A,    b : B,    c : C  )</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We use a “regular” play json format for the embedded case classes.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And the “trick” now is to use the JsPath Play Json Combinator for the embedded case classes without any path.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That’s all folks!</p>
 </div>
 </div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
