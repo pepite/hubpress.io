@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505810804962" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)" />
+    <meta property="og:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this --- {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html" />
+    <meta property="article:tag" content="play" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)" />
+    <meta name="twitter:description" content="It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this --- {  &quot;a1&quot;: ...,  &quot;a2&quot; : ...,  &quot;a3&quot; : ...,  &quot;a4&quot; : ...,  &quot;a5&quot; : ...,  &quot;a6&quot; : ...,  &quot;a7&quot; : ...,  &quot;a8&quot; : ...,  &quot;a9&quot; : ...,  &quot;a10&quot; : ...,  &quot;a11&quot; : ...,  &quot;a12&quot; : ...,  &quot;a13&quot; : ...,  &quot;a14&quot; : ...,  &quot;" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-play nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-play">
+
+        <header class="post-header">
+            <h1 class="post-title">Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-08-15">15 August 2016</time>  on <a href="https://pepite.github.io/hubpress.io/tag/play/">play</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="paragraph">
+<p>It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">---
+{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
+</div>
+</div>
+<hr>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Play%20Framework%20-%20Beginner%20Tutorial%20%3A%20How%20to%20handle%20a%20big%20json%20file%20in%20play%20(%20more%20than%2022%20root%20variables)&amp;url=https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505810804962"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505810804962"></script>
+   
+  
+</body>
+</html>
