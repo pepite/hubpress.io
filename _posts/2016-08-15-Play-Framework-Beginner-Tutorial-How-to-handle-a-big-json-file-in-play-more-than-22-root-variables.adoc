@@ -9,7 +9,7 @@ It is not a good practice to have such a big json with many root variables. Neve
 {  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}
 ```
 
-### First approach
+## First approach
 
 Since scala 2.11 we can have case class with more than 22 fields, so the following compiles.
 
@@ -35,7 +35,7 @@ jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890
 
 So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play Json documentation]
 
-### Second approach
+## Second approach
 I don’t consider having a case class with so many fields a good solution.
 
 A better solution is to organize these fields in “logical” embedded case classes.
