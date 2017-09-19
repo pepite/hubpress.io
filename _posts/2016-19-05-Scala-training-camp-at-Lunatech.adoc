@@ -1,0 +1,5 @@
+# Scala training camp at Lunatech
+:published_at: 2016-19-05
+:hp-tags: scala, office
+
+Every friday our teams work together to improve their skills on Scala and other technologies. They explore new grounds, new ideas and new techniques.  They share knowledge between teams. Join us if you want to make your passion your work.
