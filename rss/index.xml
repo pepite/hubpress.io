@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 14:36:06 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 14:49:41 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -230,9 +230,21 @@ jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
+<pre class="highlight"><code>case class A (
+a1:String, a2:String, a3:String, a4:String,
+a5:String, a6:String, a7:String, a8:String
+)
 
-case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  )case class C (    a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )case class JsonExample2 (    a : A,    b : B,    c : C  )</code></pre>
+case class B (
+a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String
+)
+case class C (
+a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )
+case class JsonExample2 (
+a : A,
+b : B,
+c : C
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -240,7 +252,10 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
+<pre class="highlight"><code>import play.api.libs.json._
+implicit val jsonAFormat : Format[A] = Json.format[A]
+implicit val jsonBFormat : Format[B]= Json.format[B]
+implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -248,7 +263,13 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))</code></pre>
+<pre class="highlight"><code>import play.api.libs.functional.syntax._
+implicit val jsonExample2Format: Format[JsonExample2]  = (
+(JsPath).format[A] and
+(JsPath).format[B] and
+(JsPath).format[C])
+(JsonExample2.apply, unlift(JsonExample2.unapply)
+)</code></pre>
 </div>
 </div>
 <div class="paragraph">
