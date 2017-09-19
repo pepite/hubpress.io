@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 10:10:39 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 10:58:11 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -99,7 +99,81 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 <p>That’s all folks!</p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Delivery on GitLab with Play, Scala, SBT and Heroku]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Last week we talked about <a href="http://www.lunatech.com/blog/V5tpoCQAANsPL4jw/continuous-integration-on-gitlab-with-scala-and-sbt">Continuous Integration (CI) with Scala and SBT on GitLab</a>. This week we are going to take a step further and implement Continuous Delivery (CD) on GitLab with Play and Heroku.</p>
+</div>
+<div class="paragraph">
+<p>Let’s first recap last week’s post. To enable CI, we used the .gitlab-ci.yml file. Builds are run in Docker and to make sure we could execute our tests, we used a Java Docker image and made sure SBT was installed. The definition in our .gitlab-ci.yml file contained only a single stage: the test stage. This week we are going to extend our pipeline with a deploy stage.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_play_deployment_with_heroku">Play Deployment with Heroku</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The application we are going to deploy is a Play Framework application. For now we assume we already have such application with SBT as the build tool.</p>
+</div>
+<div class="paragraph">
+<p>Heroku is a cloud application platform that has support for Play applications. This means that running your application on Heroku requires little setup and most important is getting the source of your application there. For that, we use the tool <a href="https://github.com/travis-ci/dpl">dpl</a> from Travis CI.</p>
+</div>
+<div class="paragraph">
+<p>Dpl is a simple command line deployment tool that supports Heroku. We can deploy our Play application to Heroku using dpl with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>dpl --provider=heroku --app=&lt;application-name&gt; --api-key=&lt;api-key&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First you have to create an application in Heroku.<code>&lt;application-name&gt;</code> in the command above should be substituted with the name you gave the application. Additionally, <code>&lt;api-key&gt;</code> should be substituted by your Heroku API key which you can find under (under <a href="https://dashboard.heroku.com/account">Account</a> &gt; API Key).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_putting_it_all_together">Putting It All Together</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We extend the definition of our pipeline in the .gitlab-ci.yml file by adding a deploy stage and in the deploy stage, we install dpl and instruct it to deploy the new version of the application to Heroku. To hide the API key it is passed via a secret variable. This can be added in GitLab in your project’s settings under <strong>Variables</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The .gitlab-ci.yml file now looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>stages:
+- test
+- deploy
+test:  stage: test
+script:
+# Test the project
+- sbt clean test
+deploy:
+stage: deploy
+script:
+# Install dpl
+- apt-get update
+-yq
+- apt-get install rubygems ruby-dev -y
+- gem install dpl
+# Deploy to Heroku
+- dpl --provider=heroku --app=lunatech-demo-cd-play-scala --api-key=$HEROKU_API_KEY</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After pushing this .gitlab-ci.yml file to our GitLab repository containing the Play project, our continuous delivery pipeline is enabled. On every new push, the tests of the project are run and if the tests pass, the new version of the application is deployed to Heroku using dpl.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_source_code">Source Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The source code of a demo project implementing the pipeline described in this post can be found here: <a href="https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku" class="bare">https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku</a>.</p>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</guid><category><![CDATA[play ]]></category><category><![CDATA[scala]]></category><pubDate>Mon, 08 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.</p>
