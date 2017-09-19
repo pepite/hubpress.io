@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 09:37:09 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 10:00:32 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -32,7 +32,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p>But if we try to use Play [JSON automated mapping](<a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated" class="bare">https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated</a>)</p>
+<p>But if we try to use Play <a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated">JSON automated mapping</a></p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -48,7 +48,7 @@
 </div>
 </div>
 <div class="paragraph">
-<p>Instead we can use Play-Json extensions(requires play-json &gt;= 2.4)</p>
+<p>Instead we can use <a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators">Play-Json extensions</a>(requires play-json &gt;= 2.4)</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -58,7 +58,7 @@ jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</cod
 </div>
 </div>
 <div class="paragraph">
-<p>So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in Play Json documentation</p>
+<p>So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in <a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators">Play Json documentation</a></p>
 </div>
 </div>
 <div class="sect2">
@@ -85,7 +85,7 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 </div>
 </div>
 <div class="paragraph">
-<p>And the “trick” now is to use the JsPath Play Json Combinator for the embedded case classes without any path.</p>
+<p>And the “trick” now is to use the JsPath <a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators">Play Json Combinator</a> for the embedded case classes without any path.</p>
 </div>
 <div class="listingblock">
 <div class="content">
