@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 11:14:15 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 12:48:09 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -707,13 +707,19 @@ even(3000).result</code></pre>
 <p>Lunatech was founded in 1993 and located in Rotterdam. Lunatech provides its services to proven customers in the Netherlands and France, as for example: ING, SDU, Alcatel, Disney and UPS.</p>
 </div>
 <div class="paragraph">
-<p>The strength of Lunatech is also recognised by the investors, says Lars van ‘t Hoenderdaal: “<em>Lunatech is a very nice company with a strong management team and international growth potential. We experienced great interest among our funders to participate in this mezzanine proposition</em>.”</p>
+<p>The strength of Lunatech is also recognised by the investors, says Lars van ‘t Hoenderdaal:</p>
+</div>
+<div class="paragraph">
+<p>“<em>Lunatech is a very nice company with a strong management team and international growth potential. We experienced great interest among our funders to participate in this mezzanine proposition</em>.”</p>
 </div>
 <div class="paragraph">
 <p>After reaching agreement on the transaction structure and financing structure, the transaction has been completed within 4 weeks. Rabobank has also shown their strength by acting quickly.</p>
 </div>
 <div class="paragraph">
-<p>Ray Kemp, CEO Lunatech, is very satisfied with the realised MBO: <em>“Due to funding from the bank and mezzanine we were able to realise the MBO without a private equity investor. In this way we can realise our growth independently</em>.”</p>
+<p>Ray Kemp, CEO Lunatech, is very satisfied with the realised MBO:</p>
+</div>
+<div class="paragraph">
+<p><em>“Due to funding from the bank and mezzanine we were able to realise the MBO without a private equity investor. In this way we can realise our growth independently</em>.”</p>
 </div>
 <div class="paragraph">
 <p>Main Mezzanine Capital is part of Main Capital Partners, an investment and financing company, as well as a corporate finance advisor, with a focus on growing and profitable companies in the TMT sector in the Netherlands. Main Mezzanine Capital is funded by its own shareholders, wealthy individuals, family offices and (former) entrepreneurs, who like to invest in companies with an interesting risk-return profile.</p>
