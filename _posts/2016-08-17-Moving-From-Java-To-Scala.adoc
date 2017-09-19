@@ -31,7 +31,8 @@ for (int i = 0; i < intList.size(); i++) {		if (intList.get(i) % 2 == 0)			intLi
 
 ----
 Into this:
-[source;scala]
+
+[source,scala]
 ----
 intList.map(x => if (x % 2 == 0) x + 1 else x)
 ----
