@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Continuous Delivery on GitLab with Play, Scala, SBT and Heroku</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505818691899" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Continuous Delivery on GitLab with Play, Scala, SBT and Heroku" />
+    <meta property="og:description" content="Last week we talked about Continuous Integration (CI) with Scala and SBT on GitLab. This week we are going to take a step further and implement Continuous Delivery (CD) on GitLab with Play and Heroku. Let’s first recap last week’s post. To enable CI, we used the .gitlab-ci." />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html" />
+    <meta property="article:tag" content="play " />
+    <meta property="article:tag" content="scala" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Continuous Delivery on GitLab with Play, Scala, SBT and Heroku" />
+    <meta name="twitter:description" content="Last week we talked about Continuous Integration (CI) with Scala and SBT on GitLab. This week we are going to take a step further and implement Continuous Delivery (CD) on GitLab with Play and Heroku. Let’s first recap last week’s post. To enable CI, we used the .gitlab-ci." />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-play tag-scala nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-play tag-scala">
+
+        <header class="post-header">
+            <h1 class="post-title">Continuous Delivery on GitLab with Play, Scala, SBT and Heroku</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-08-08">08 August 2016</time>  on <a href="https://pepite.github.io/hubpress.io/tag/play/">play </a>, <a href="https://pepite.github.io/hubpress.io/tag/scala/">scala</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Last week we talked about <a href="http://www.lunatech.com/blog/V5tpoCQAANsPL4jw/continuous-integration-on-gitlab-with-scala-and-sbt">Continuous Integration (CI) with Scala and SBT on GitLab</a>. This week we are going to take a step further and implement Continuous Delivery (CD) on GitLab with Play and Heroku.</p>
+</div>
+<div class="paragraph">
+<p>Let’s first recap last week’s post. To enable CI, we used the .gitlab-ci.yml file. Builds are run in Docker and to make sure we could execute our tests, we used a Java Docker image and made sure SBT was installed. The definition in our .gitlab-ci.yml file contained only a single stage: the test stage. This week we are going to extend our pipeline with a deploy stage.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_play_deployment_with_heroku">Play Deployment with Heroku</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The application we are going to deploy is a Play Framework application. For now we assume we already have such application with SBT as the build tool.</p>
+</div>
+<div class="paragraph">
+<p>Heroku is a cloud application platform that has support for Play applications. This means that running your application on Heroku requires little setup and most important is getting the source of your application there. For that, we use the tool <a href="https://github.com/travis-ci/dpl">dpl</a> from Travis CI.</p>
+</div>
+<div class="paragraph">
+<p>Dpl is a simple command line deployment tool that supports Heroku. We can deploy our Play application to Heroku using dpl with the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>dpl --provider=heroku --app=&lt;application-name&gt; --api-key=&lt;api-key&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>First you have to create an application in Heroku.<code>&lt;application-name&gt;</code> in the command above should be substituted with the name you gave the application. Additionally, <code>&lt;api-key&gt;</code> should be substituted by your Heroku API key which you can find under (under <a href="https://dashboard.heroku.com/account">Account</a> &gt; API Key).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_putting_it_all_together">Putting It All Together</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We extend the definition of our pipeline in the .gitlab-ci.yml file by adding a deploy stage and in the deploy stage, we install dpl and instruct it to deploy the new version of the application to Heroku. To hide the API key it is passed via a secret variable. This can be added in GitLab in your project’s settings under <strong>Variables</strong>.</p>
+</div>
+<div class="paragraph">
+<p>The .gitlab-ci.yml file now looks like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>stages:
+- test
+- deploy
+test:  stage: test
+script:
+# Test the project
+- sbt clean test
+deploy:
+stage: deploy
+script:
+# Install dpl
+- apt-get update
+-yq
+- apt-get install rubygems ruby-dev -y
+- gem install dpl
+# Deploy to Heroku
+- dpl --provider=heroku --app=lunatech-demo-cd-play-scala --api-key=$HEROKU_API_KEY</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>After pushing this .gitlab-ci.yml file to our GitLab repository containing the Play project, our continuous delivery pipeline is enabled. On every new push, the tests of the project are run and if the tests pass, the new version of the application is deployed to Heroku using dpl.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_source_code">Source Code</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The source code of a demo project implementing the pipeline described in this post can be found here: <a href="https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku" class="bare">https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku</a>.</p>
+</div>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Continuous%20Delivery%20on%20GitLab%20with%20Play%2C%20Scala%2C%20SBT%20and%20Heroku&amp;url=https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505818691899"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505818691899"></script>
+   
+  
+</body>
+</html>
