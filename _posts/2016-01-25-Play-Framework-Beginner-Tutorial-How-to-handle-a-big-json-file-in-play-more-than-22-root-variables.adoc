@@ -1,6 +1,0 @@
-# Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)
-
-:published_at: 2016-01-25
-:hp-tags: play
-
-It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this
