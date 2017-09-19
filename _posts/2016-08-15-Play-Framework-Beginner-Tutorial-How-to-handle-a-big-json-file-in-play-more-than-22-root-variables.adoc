@@ -17,7 +17,7 @@ Since scala 2.11 we can have case class with more than 22 fields, so the followi
 case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)
 ```
 
-But if we try to use Play [JSON automated mapping](https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated)
+But if we try to use Play https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated[JSON automated mapping]
 ```
 import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]
 ```
@@ -26,14 +26,14 @@ we get a compiler error
 <console>:16: error: No unapply or unapplySeq function found       implicit val jsonExampleFormat = Json.format[JsonExample]                                                   ^
 ```
 
-Instead we can use Play-Json extensions(requires play-json >= 2.4) 
+Instead we can use https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play-Json extensions](requires play-json >= 2.4) 
 ```
 import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
 
 jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890
 ```
 
-So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in Play Json documentation
+So now we have a Play Json format for a case class with more than 22 fields, and can use it as described in https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play Json documentation]
 
 ### Second approach
 I don’t consider having a case class with so many fields a good solution.
@@ -49,7 +49,7 @@ We use a “regular” play json format for the embedded case classes.
 ```
 import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]
 ```
-And the “trick” now is to use the JsPath Play Json Combinator for the embedded case classes without any path.
+And the “trick” now is to use the JsPath https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play Json Combinator] for the embedded case classes without any path.
 ```
 import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))
 ```
