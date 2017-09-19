@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 12:48:09 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Tue, 19 Sep 2017 13:36:44 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -9,7 +9,102 @@
 </div>
 <div class="paragraph">
 <p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving From Java To Scala]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless: Introduction resources]]></title><description><![CDATA[<div class="sect1">
+<h2 id="_where_to_start_if_you_want_to_learn_shapeless">Where to start if you want to learn shapeless</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Recently I decided to have a better look at <a href="https://github.com/milessabin/shapeless">shapeless</a>, the generic programming library for Scala. In the previous couple of years I had bookmarked several links and have recently read all of them. In this blog post I present the most useful ones for someone who want to be introduced to the library.</p>
+</div>
+<div class="paragraph">
+<p>The following blog posts are introductory to shapeless. Basically they are a smooth introduction to shapeless, something to warm up</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://jto.github.io/articles/getting-started-with-shapeless/">Getting started with Shapeless</a> by <a href="https://twitter.com/skaalf">Julien Tournay</a> (heterogenous lists, polymorphic function values, generic, tuples, lenses)</p>
+</li>
+<li>
+<p><a href="https://enear.github.io/2016/04/05/bits-shapeless-1-hlists/">Bits of Shapeless part 1: HLists</a> by <a href="https://twitter.com/ragb">Rui Batista</a> (Heterogenous lists)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Also these slides on <a href="http://slick.lightbend.com/talks/scalaio2014/Type-Level_Computations.pdf">Type-Level Computations in Scala</a> by <a href="https://twitter.com/StefanZeiger">Stefan Zeiger</a> (not shapeless per se , but a lot of examples for type-level scala, like type-level booleans, type-level natural numbers, translation to types, recursion with types, type functions, type lambdas, heterogenous lists, hlist fold). I tried to find the video talk, but couldn’t find it online.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="https://rnduja.github.io/2016/01/19/a_shapeless_primer/">Α shapeless primer</a> blog post by <a href="https://twitter.com/evacchi">Edoardo Vacchi</a> is the best and most complete introductory blog post I could find. It really goes into a lot of explaining hlists, product types, Generic[T], FnToProduct[F] object, implicit value resolution, evidences and typeclasses, the Aux Pattern). There is also a <a href="https://rnduja.github.io/2015/10/07/scala-dependent-types/">video</a> presentation by the author Edoardo Vacchi <a href="https://speakerdeck.com/evacchi/be-like-water-scala-italy-2016">(with slides)</a>. In this blog post I find very interesting the comparison of Scala with Prolog and how implicit variables, implicit functions, type parameters in functions and implicit parameter lists of functions can be “interpreted” in a rule-based context.</p>
+</div>
+<div class="paragraph">
+<p><strong>Scala</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>implicit vals</p>
+</li>
+<li>
+<p>implicit defs</p>
+</li>
+<li>
+<p>type parameters in def</p>
+</li>
+<li>
+<p>implicit parameters lists</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Prolog</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>facts</p>
+</li>
+<li>
+<p>rules</p>
+</li>
+<li>
+<p>variable in a rule</p>
+</li>
+<li>
+<p>bodies of a rule</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In <a href="https://www.youtube.com/watch?v=JKaCCYZYBWo">Shapeless? - Easy!</a>, <a href="https://twitter.com/valentinkasas">Valentin Kasas</a> explains in a great way an advanced example of a real life use case (computing deltas) (with <a href="https://twitter.com/valentinkasas">slides</a>). From this presentation I took the following <a href="http://harrylaou.com/scala/shapeless/deltas/">notes</a>. There are also available two nice blog posts by Valentin : Shapeless : not a tutorial - <a href="http://kanaka.io/blog/2015/11/09/shapeless-not-a-tutorial-part-1.html">part 1</a> (Heterogenous lists, polymorphic function values, high order poly functions) and part 2 (Generic, singleton types, records and LabelledGeneric)</p>
+</div>
+<div class="paragraph">
+<p>In First-class polymorphic function values in shapeless (2 of 3) — Natural Transformations in Scala, <a href="https://twitter.com/milessabin">Miles Sabin</a> the creator of <a href="https://github.com/milessabin/shapeless">shapeless</a> explains the concepts of polymorphic functions and natural transformations.</p>
+</div>
+<div class="paragraph">
+<p>In the <a href="https://github.com/fommil/shapeless-for-mortals">Shapeless for Mortals</a> talk, <a href="https://twitter.com/fommil">Sam Halliday</a> explains shapeless fundamentals like : type classes (not shapeless per se , but used extensively when using the library), singleton types, HList, LabelledGeneric, Coproduct, Hipster.Aux (SI-823), Higher Order Unification, Implicit Resolution: Recursion , Cycles and Priority, Tags (<a href="https://fommil.github.io/scalax15/scalax-shapeless-mortals-notes.html">Notes</a> from the talk)</p>
+</div>
+<div class="paragraph">
+<p>The page <a href="https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0">Shapeless features</a> provides a short overview of the main features of the library : polymorphic function values, heterogenous lists, HList-style operations on standard Scala tuples, facilities for abstracting over arity, heterogenous maps, singleton-typed literals, singleton-typed symbols, extensible records, coproducts and discriminated unions, generic representation of (sealed families of) case classes, boilerplate-free lenses for arbitrary case classes, automatic type class instance derivation, first class lazy values tie implicit recursive knots, collections with statically known sizes, type safe cast(Typeable/TypeCase), testing for non-compilation (illTyped)</p>
+</div>
+<div class="paragraph">
+<p>After reading Shapeless features , the natural thing to follow is the <a href="https://www.scala-exercises.org/shapeless/polymorphic_function_values">Scala exercises in shapeless</a> by 47 deg, which is almost identical to <a href="https://github.com/milessabin/shapeless/wiki/Feature-overview:-shapeless-2.0.0">Shapeless features</a>, but you will need to fill in the gaps so as to solve the exercises.</p>
+</div>
+<div class="paragraph">
+<p>A lot of examples are available in <a href="https://github.com/milessabin/shapeless/tree/master/examples/src/main/scala/shapeless/examples">Shapeless examples</a></p>
+</div>
+<div class="paragraph">
+<p>bonus : Although not shapeless specific, there are two very interesting talks about Lenses</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://github.com/milessabin/shapeless/tree/master/examples/src/main/scala/shapeless/examples">Lenses: Fields as Values</a> (<a href="https://github.com/SethTisue/lens-examples/tree/master/src/main/scala">examples slides</a>) where Seth Tissue explains the concept of Lenses and uses shapeless lenses.</p>
+</li>
+<li>
+<p><a href="https://www.youtube.com/watch?v=6nyGVgGEKdA">Beyond Scala Lenses</a> where <a href="https://twitter.com/julientruffaut">Julien Truffaut</a> (the creator of the <a href="https://github.com/julien-truffaut/Monocle">Monocle</a> library which is built with shapeless) explains the optics terms  Iso, Prism, Lens and Optional.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/09/05/Shapeless-Introduction-resources.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/09/05/Shapeless-Introduction-resources.html</guid><category><![CDATA[shapeless]]></category><pubDate>Mon, 05 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving From Java To Scala]]></title><description><![CDATA[<div class="paragraph">
 <p>Sometime ago I came from Madrid to Rotterdam to join Lunatech’s international workforce. Apart from introducing me to Dutch summers (rain), this also gave me an opportunity to learn a new programming language: Scala.</p>
 </div>
 <div class="paragraph">
