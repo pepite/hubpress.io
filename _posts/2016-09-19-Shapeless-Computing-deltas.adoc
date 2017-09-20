@@ -14,7 +14,7 @@ This is the code and some personal notes from the https://www.youtube.com/watch?
 * Of course, doing this by hand for each and every class is not an option
 
 Our diff representation
-[Source, scala]
+[Source, java]
 ----
 sealed trait Diff[A]
 final case class Identical[A](value: A) extends Diff[A]
