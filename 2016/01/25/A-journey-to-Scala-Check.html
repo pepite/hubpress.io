@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>A journey to ScalaCheck</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505894953569" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="A journey to ScalaCheck" />
+    <meta property="og:description" content="From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one. I want to share some of that and show how my journey to ScalaCheck started. I will prove that" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html" />
+    <meta property="article:tag" content="scala" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="A journey to ScalaCheck" />
+    <meta name="twitter:description" content="From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one. I want to share some of that and show how my journey to ScalaCheck started. I will prove that" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-scala nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-scala">
+
+        <header class="post-header">
+            <h1 class="post-title">A journey to ScalaCheck</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-01-25">25 January 2016</time>  on <a href="https://pepite.github.io/hubpress.io/tag/scala/">scala</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one.</p>
+</div>
+<div class="paragraph">
+<p>I want to share some of that and show how my journey to <a href="https://gist.github.com/mariadroman/816d5b6848592aaacfa722c372dbccba">ScalaCheck</a> started. I will prove that it&#8217;s not complicated to start with and it can uncover deeply hidden bugs in your code.</p>
+</div>
+<div class="paragraph">
+<p>As developers, we need to be sure that we create code that performs exactly how it is meant to. This should be true in every possible scenario. However, how can we prove that our codebase actually does this for a wide range of data? Sometimes it is just not feasible to write innumerable amount of test cases for a specific function. We need to find a way to somehow prove our function works as expected in every possible case.</p>
+</div>
+<div class="paragraph">
+<p>Property-based testing provides another way of thinking, that was new to me, about writing tests. Sometimes it is better to prove that a function satisfies a specific property, rather than to write a number of tests which try to confirm it is working fine. One way of proving is to generate an appropriate amount of data and apply these data to your test suite. These generated data should all have the same specific property, hence the name property-based testing.</p>
+</div>
+<div class="paragraph">
+<p>As an example, imagine we want to test String concatenation. To do this we need to be sure that: <strong>For all given two strings, str1 and str2, the result of concatenating both strings must satisfy: str1.length + str2.length &gt;= str1.length</strong></p>
+</div>
+<div class="paragraph">
+<p>Traditionally, we would write a test like:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">test("Concatenate should generate a String of length s1+s2") {
+concatenate("", "").length == 0
+concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("Welcome to ","Lunatech.").length == 20 //Welcome to Lunatech.
+}
+But testing all possible combinations of 2 strings is impractical this way. In these cases, ScalaCheck is the recommended solution.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s first understand the basic concepts in ScalaCheck: Properties and Generators.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_properties">Properties</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In ScalaCheck you can specify what the input parameters are and what their properties are that must be satisfied by the input. It uses a very elegant and intuitive way for defining properties:</p>
+</div>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=A%20journey%20to%20ScalaCheck&amp;url=https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505894953569"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505894953569"></script>
+   
+  
+</body>
+</html>
