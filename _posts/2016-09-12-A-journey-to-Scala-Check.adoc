@@ -70,12 +70,10 @@ Some examples using arbitrary/generators:
 However, most of the time we do not want to check such a general data type. For this, ScalaCheck also offers the possibility of defining *custom generators* where we can establish what the input data should look like.
 
 Let's use a simple example to understand the usage of custom generators. Imagine we are a Benelux bank that wants to verify that their Dutch customers who have a negative balance in at least one of their accounts, should be notified by email. For simplicity, we define customer and bank account as below:
-
-[source, scala]
-
+```
 case class Account(accountId: String, balance: Double, country: String)
 case class Customer(customerId: String, name: String, nationality: String, accounts: Seq[Account])
-
+```
 
 So first we want to generate Account data. To do this, we make use of Arbitrary and Gen. Because we are only interested in Benelux accounts the country field will be one of "BE", "NL" or "LU"
 
