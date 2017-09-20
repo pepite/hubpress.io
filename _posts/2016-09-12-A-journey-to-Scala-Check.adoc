@@ -147,8 +147,7 @@ This shows us that maybe we should add some conditions to the accountId or the b
 Now that we are familiar with properties and generators, it is time to write tests. We have good examples in the Scala community, because ScalaCheck is used by many Scala open source projects (like Akka or Play).
 In this case, we will continue with our concatenate example.
 
-[source,scala]
-----
+```
 import org.scalacheck.Properties
 import org.scalacheck.Prop.forAll
 class StringProperties extends Properties("String Properties") {
@@ -161,7 +160,8 @@ s1.length + s2.length >= 0
  (s + s).length == len + len
 }
 }
-----
+```
+
 Our properties file can be as simple as that, or we can make it as complicated as we need. We can also integrate it with http://www.scalatest.org/user_guide/writing_scalacheck_style_properties[ScalaTest] or https://etorreborre.github.io/specs2/guide/SPECS2-3.0/org.specs2.guide.UseScalaCheck.html[Specs2]
 
 == Running ScalaCheck tests
