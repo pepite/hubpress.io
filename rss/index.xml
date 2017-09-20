@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 14:18:02 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 14:47:26 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -9,7 +9,88 @@
 </div>
 <div class="paragraph">
 <p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless: Introduction resources]]></title><description><![CDATA[<div class="sect1">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless : Computing deltas]]></title><description><![CDATA[<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>A real life exemple</strong></p>
+</div>
+<div class="paragraph">
+<p>This is the code and some personal notes from the <a href="https://www.youtube.com/watch?v=JKaCCYZYBWo">Shapeless? - Easy!</a> talk where <a href="https://twitter.com/valentinkasas">Valentin Kasas</a> explains in a great way an advanced example of a real life use case (with <a href="https://gist.github.com/vil1/29f2d155679c703edfbe402f067962f6">slides</a>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_computing_deltas">Computing deltas</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Imagine we want to be able to determine what are the difference between two objects of the same type</p>
+</li>
+<li>
+<p>For example, we need to know what have changed in our DB since the last backup</p>
+</li>
+<li>
+<p>We need to be able to compute such deltas over a wide variety of classes, that are unrelated</p>
+</li>
+<li>
+<p>Of course, doing this by hand for each and every class is not an option</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Our diff representation</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sealed trait Diff[A]
+final case class Identical[A](value: A) extends Diff[A]
+final case class Different[A](left: A, right: A) extends Diff[A]
+object Diff {
+def apply[A](left: A, right: A): Diff[A] =
+  if (left == right) Identical(left)
+  else       Different(left, right)
+  }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>A first Delta implementation</strong></p>
+</div>
+<div class="paragraph">
+<p>We are creating a superclass here using DepFn . The return type differs according to the input type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait SimpleDelta[R &lt;: HList] extends DepFn2[R, R] {
+  type Out &lt;: HList //Result is bounded by HList
+  }
+  object SimpleDelta {
+ /** type alias Aux adds as a type parameter the return Type.
+   * It is convenient in order to constrain it
+   * by passing it as a type parameter.
+   */
+type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I]{ type Out = O }
+//Recursive Algorithm
+implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+type Out = HNil
+def apply(l: HNil, r: HNil): Out = HNil
+}
+implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList]
+(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
+new SimpleDelta[H :: T]{
+type Out = Diff[H] :: DT
+def apply(l: H :: T, r: H :: T) : Out =
+Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+}
+def apply[A, R &lt;: HList](l: A, r: A)
+(implicit genA: Generic.Aux[A, R],
+delta: SimpleDelta[R]): delta.Out =
+delta(genA.to(l), genA.to(r))
+}</code></pre>
+</div>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html</guid><category><![CDATA[shapeless]]></category><pubDate>Mon, 19 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless: Introduction resources]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_where_to_start_if_you_want_to_learn_shapeless">Where to start if you want to learn shapeless</h2>
 <div class="sectionbody">
 <div class="paragraph">
