@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 15:42:05 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 15:44:05 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -135,7 +135,8 @@ concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("We
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">property("Concatenation length of two strings should be greater or equal to length of first string") = forAll { (s1: String, s2: String) =&gt;
+<pre class="highlight"><code class="language-scala" data-lang="scala">property("Concatenation length of two strings should be greater or equal to length of first string")
+= forAll { (s1: String, s2: String) =&gt;
    (s1 + s2).length &gt;= s1.length
 }</code></pre>
 </div>
