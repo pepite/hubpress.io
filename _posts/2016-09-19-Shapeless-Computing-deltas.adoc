@@ -1,0 +1,63 @@
+= Shapeless : Computing deltas
+:published_at: 2016-09-19
+:hp-tags: shapeless
+
+*A real life exemple*
+
+This is the code and some personal notes from the https://www.youtube.com/watch?v=JKaCCYZYBWo[Shapeless? - Easy!] talk where https://twitter.com/valentinkasas[Valentin Kasas] explains in a great way an advanced example of a real life use case (with https://gist.github.com/vil1/29f2d155679c703edfbe402f067962f6[slides]).
+
+== Computing deltas
+
+* Imagine we want to be able to determine what are the difference between two objects of the same type
+* For example, we need to know what have changed in our DB since the last backup
+* We need to be able to compute such deltas over a wide variety of classes, that are unrelated
+* Of course, doing this by hand for each and every class is not an option
+
+Our diff representation
+[Source, scala]
+----
+sealed trait Diff[A]
+final case class Identical[A](value: A) extends Diff[A]
+final case class Different[A](left: A, right: A) extends Diff[A]
+object Diff {
+def apply[A](left: A, right: A): Diff[A] =
+  if (left == right) Identical(left)
+  else       Different(left, right)
+  }
+----
+
+*A first Delta implementation*
+
+We are creating a superclass here using DepFn . The return type differs according to the input type
+[source, scala]
+----
+trait SimpleDelta[R <: HList] extends DepFn2[R, R] {
+  type Out <: HList //Result is bounded by HList
+  }
+  object SimpleDelta {
+ /** type alias Aux adds as a type parameter the return Type. 
+   * It is convenient in order to constrain it 
+   * by passing it as a type parameter.
+   */
+type Aux[I <: HList, O <: HList] = SimpleDelta[I]{ type Out = O }
+//Recursive Algorithm
+implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+type Out = HNil
+def apply(l: HNil, r: HNil): Out = HNil
+}
+implicit def hconsDelta[H, T <: HList, DT <: HList]
+(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
+new SimpleDelta[H :: T]{
+type Out = Diff[H] :: DT
+def apply(l: H :: T, r: H :: T) : Out =
+Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+}
+def apply[A, R <: HList](l: A, r: A)
+(implicit genA: Generic.Aux[A, R],
+delta: SimpleDelta[R]): delta.Out =
+delta(genA.to(l), genA.to(r))
+}
+----
+
+
+
