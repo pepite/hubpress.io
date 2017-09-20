@@ -31,7 +31,9 @@ Let's first understand the basic concepts in ScalaCheck: Properties and Generato
 In ScalaCheck you can specify what the input parameters are and what their properties are that must be satisfied by the input. It uses a very elegant and intuitive way for defining properties:
 [source, scala]
 ----
-property("Concatenation length of two strings should be greater or equal to length of first string") = forAll { (s1: String, s2: String) =>  (s1 + s2).length >= s1.length}
+property("Concatenation length of two strings should be greater or equal to length of first string") = forAll { (s1: String, s2: String) =>
+   (s1 + s2).length >= s1.length
+}
 ----
 
 In this small piece of code, we declare a property ("Concatenation length of two strings ..."), that holds forAll possible cases of concatenating 2 strings (s1 and s2). This seems reasonable but how can we prove what this property holds true. One way is by creating a lot of tests. And that is where Generators come in handy.
