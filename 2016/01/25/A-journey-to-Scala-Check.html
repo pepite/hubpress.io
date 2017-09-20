@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505895332805" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505897886853" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -86,7 +86,7 @@ null
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">test("Concatenate should generate a String of length s1+s2") {
+<pre class="highlight"><code class="language-scala" data-lang="scala">test("Concatenate should generate a String of length s1+s2") {
 concatenate("", "").length == 0
 concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("Welcome to ","Lunatech.").length == 20
 //Welcome to Lunatech.
@@ -106,6 +106,108 @@ concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("We
 <div class="sectionbody">
 <div class="paragraph">
 <p>In ScalaCheck you can specify what the input parameters are and what their properties are that must be satisfied by the input. It uses a very elegant and intuitive way for defining properties:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">property("Concatenation length of two strings should be greater or equal to length of first string") = forAll { (s1: String, s2: String) =&gt;  (s1 + s2).length &gt;= s1.length}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this small piece of code, we declare a property ("Concatenation length of two strings &#8230;&#8203;"), that holds forAll possible cases of concatenating 2 strings (s1 and s2). This seems reasonable but how can we prove what this property holds true. One way is by creating a lot of tests. And that is where Generators come in handy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_generators">Generators</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To generate this input data, ScalaCheck provides us with a wide range of generators available in objects Arbitraty and Gen.</p>
+</div>
+<div class="paragraph">
+<p>The org.scalacheck.Arbitrary module defines implicit Arbitrary instances for common types, for convenient use in your properties and generators:</p>
+</div>
+<div class="paragraph">
+<p><code>returns an arbitrary generator for the type T</code></p>
+</div>
+<div class="paragraph">
+<p>The org.scalacheck.Gen uses Arbitrary and offers various generators:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>alphaLowerChar, alphaUpperChar, alphaNumChar</p>
+</li>
+<li>
+<p>identifier, alphaStr, numStr</p>
+</li>
+<li>
+<p>negNum, posNum, chooseNum</p>
+</li>
+<li>
+<p>listOf, listOfN, nonEmptyListOf</p>
+</li>
+<li>
+<p>choose, oneOf, someOf</p>
+</li>
+<li>
+<p>const</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Some examples using arbitrary/generators:</p>
+</div>
+<div class="paragraph">
+<p><code>id &#8592; arbitrary[Int]</code></p>
+</div>
+<div class="paragraph">
+<p><code>married &#8592; arbitrary[Boolean]</code></p>
+</div>
+<div class="paragraph">
+<p><code>age &#8592; choose(0, 120)</code></p>
+</div>
+<div class="paragraph">
+<p><code>currency &#8592; const("euro")</code></p>
+</div>
+<div class="paragraph">
+<p><code>description &#8592; arbitrary[String]</code></p>
+</div>
+<div class="paragraph">
+<p>However, most of the time we do not want to check such a general data type. For this, ScalaCheck also offers the possibility of defining <strong>custom generators</strong> where we can establish what the input data should look like.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s use a simple example to understand the usage of custom generators. Imagine we are a Benelux bank that wants to verify that their Dutch customers who have a negative balance in at least one of their accounts, should be notified by email. For simplicity, we define customer and bank account as below:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">case class Account(accountId: String, balance: Double, country: String)
+case class Customer(customerId: String, name: String, nationality: String, accounts: Seq[Account])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So first we want to generate Account data. To do this, we make use of Arbitrary and Gen. Because we are only interested in Benelux accounts the country field will be one of "BE", "NL" or "LU"</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala"> // Account generator - only Benelux accounts
+val genAccount = for {
+accountId &lt;- Gen.identifier
+balance &lt;- arbitrary[Double]
+country &lt;- Gen.oneOf("NL", "BE", "LU")} yield Account(accountId, balance, country)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As a next step, we generate customer data. Because we are only interested in Dutch clients the nationality of the customers will be forced to be always "NL"</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">// Forcing customers to be Dutch will be as easy as:
+val genDutchCustomer = for {
+customerId &lt;- Gen.identifier
+name &lt;- arbitrary[String].suchThat(_.nonEmpty)
+nationality &lt;- Gen.const("NL")
+accounts &lt;- nonEmptyListOf(genAccount)} yield Customer(customerId, name, nationality, accounts)</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -179,8 +281,8 @@ concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("We
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505895332805"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505895332805"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505897886853"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505897886853"></script>
    
   
 </body>
