@@ -14,12 +14,14 @@ Property-based testing provides another way of thinking, that was new to me, abo
 As an example, imagine we want to test String concatenation. To do this we need to be sure that: *For all given two strings, str1 and str2, the result of concatenating both strings must satisfy: str1.length + str2.length >= str1.length*
 
 Traditionally, we would write a test like:
-[source, java]
+[source, scala]
+----
 test("Concatenate should generate a String of length s1+s2") {
 concatenate("", "").length == 0   
 concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("Welcome to ","Lunatech.").length == 20
 //Welcome to Lunatech.
 }
+----
 
 But testing all possible combinations of 2 strings is impractical this way. In these cases, ScalaCheck is the recommended solution.
 
@@ -28,6 +30,84 @@ Let's first understand the basic concepts in ScalaCheck: Properties and Generato
 == Properties
 In ScalaCheck you can specify what the input parameters are and what their properties are that must be satisfied by the input. It uses a very elegant and intuitive way for defining properties:
 [source, scala]
+----
+property("Concatenation length of two strings should be greater or equal to length of first string") = forAll { (s1: String, s2: String) =>  (s1 + s2).length >= s1.length}
+----
+
+In this small piece of code, we declare a property ("Concatenation length of two strings ..."), that holds forAll possible cases of concatenating 2 strings (s1 and s2). This seems reasonable but how can we prove what this property holds true. One way is by creating a lot of tests. And that is where Generators come in handy.
+
+== Generators
+To generate this input data, ScalaCheck provides us with a wide range of generators available in objects Arbitraty and Gen.
+
+The org.scalacheck.Arbitrary module defines implicit Arbitrary instances for common types, for convenient use in your properties and generators:
+
+`returns an arbitrary generator for the type T`
+
+The org.scalacheck.Gen uses Arbitrary and offers various generators:
+
+* alphaLowerChar, alphaUpperChar, alphaNumChar
+* identifier, alphaStr, numStr
+* negNum, posNum, chooseNum
+* listOf, listOfN, nonEmptyListOf
+* choose, oneOf, someOf
+* const
+
+Some examples using arbitrary/generators:
+
+`id <- arbitrary[Int]`
+
+`married <- arbitrary[Boolean]`
+
+`age <- choose(0, 120)`
+
+`currency <- const("euro")`
+
+`description <- arbitrary[String]`
+
+However, most of the time we do not want to check such a general data type. For this, ScalaCheck also offers the possibility of defining *custom generators* where we can establish what the input data should look like.
+
+Let's use a simple example to understand the usage of custom generators. Imagine we are a Benelux bank that wants to verify that their Dutch customers who have a negative balance in at least one of their accounts, should be notified by email. For simplicity, we define customer and bank account as below:
+
+[source, scala]
+
+case class Account(accountId: String, balance: Double, country: String)
+case class Customer(customerId: String, name: String, nationality: String, accounts: Seq[Account])
+
+
+So first we want to generate Account data. To do this, we make use of Arbitrary and Gen. Because we are only interested in Benelux accounts the country field will be one of "BE", "NL" or "LU"
+
+[source,scala]
+----
+ // Account generator - only Benelux accounts
+val genAccount = for {   
+accountId <- Gen.identifier 
+balance <- arbitrary[Double] 
+country <- Gen.oneOf("NL", "BE", "LU")} yield Account(accountId, balance, country)
+----
+
+
+As a next step, we generate customer data. Because we are only interested in Dutch clients the nationality of the customers will be forced to be always "NL"
+
+[source,scala]
+----
+// Forcing customers to be Dutch will be as easy as:
+val genDutchCustomer = for { 
+customerId <- Gen.identifier    
+name <- arbitrary[String].suchThat(_.nonEmpty) 
+nationality <- Gen.const("NL")  
+accounts <- nonEmptyListOf(genAccount)} yield Customer(customerId, name, nationality, accounts)
+----
+
+
+
+
+
+
+
+
+
+
+
 
 
 
