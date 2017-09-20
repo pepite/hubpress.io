@@ -1,5 +1,5 @@
 = Moving from Spain to the Netherlands 
-:published_at: 2016-01-25
+:published_at: 2016-08-25
 :hp-tags: 
 
 Last week, I started talking about the main things I've faced when learning Scala, after being a Java developers for a few years. Today, I will talk about how it was to move from Spain to the Netherlands, in order to join Lunatech.
