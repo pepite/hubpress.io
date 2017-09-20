@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Shapeless : Computing deltas</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505918846881" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Shapeless : Computing deltas" />
+    <meta property="og:description" content="A real life exemple This is the code and some personal notes from the Shapeless? - Easy! talk where Valentin Kasas explains in a great way an advanced example of a real life use case (with slides). Computing deltas Imagine we want to be able to determine what are the" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html" />
+    <meta property="article:tag" content="shapeless" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Shapeless : Computing deltas" />
+    <meta name="twitter:description" content="A real life exemple This is the code and some personal notes from the Shapeless? - Easy! talk where Valentin Kasas explains in a great way an advanced example of a real life use case (with slides). Computing deltas Imagine we want to be able to determine what are the" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-shapeless nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-shapeless">
+
+        <header class="post-header">
+            <h1 class="post-title">Shapeless : Computing deltas</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-09-19">19 September 2016</time>  on <a href="https://pepite.github.io/hubpress.io/tag/shapeless/">shapeless</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>A real life exemple</strong></p>
+</div>
+<div class="paragraph">
+<p>This is the code and some personal notes from the <a href="https://www.youtube.com/watch?v=JKaCCYZYBWo">Shapeless? - Easy!</a> talk where <a href="https://twitter.com/valentinkasas">Valentin Kasas</a> explains in a great way an advanced example of a real life use case (with <a href="https://gist.github.com/vil1/29f2d155679c703edfbe402f067962f6">slides</a>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_computing_deltas">Computing deltas</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Imagine we want to be able to determine what are the difference between two objects of the same type</p>
+</li>
+<li>
+<p>For example, we need to know what have changed in our DB since the last backup</p>
+</li>
+<li>
+<p>We need to be able to compute such deltas over a wide variety of classes, that are unrelated</p>
+</li>
+<li>
+<p>Of course, doing this by hand for each and every class is not an option</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Our diff representation</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sealed trait Diff[A]
+final case class Identical[A](value: A) extends Diff[A]
+final case class Different[A](left: A, right: A) extends Diff[A]
+object Diff {
+def apply[A](left: A, right: A): Diff[A] =
+  if (left == right) Identical(left)
+  else       Different(left, right)
+  }</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>A first Delta implementation</strong></p>
+</div>
+<div class="paragraph">
+<p>We are creating a superclass here using DepFn . The return type differs according to the input type</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait SimpleDelta[R &lt;: HList] extends DepFn2[R, R] {
+  type Out &lt;: HList //Result is bounded by HList
+  }
+  object SimpleDelta {
+ /** type alias Aux adds as a type parameter the return Type.
+   * It is convenient in order to constrain it
+   * by passing it as a type parameter.
+   */
+type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I]{ type Out = O }
+//Recursive Algorithm
+implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+type Out = HNil
+def apply(l: HNil, r: HNil): Out = HNil
+}
+implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList]
+(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
+new SimpleDelta[H :: T]{
+type Out = Diff[H] :: DT
+def apply(l: H :: T, r: H :: T) : Out =
+Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+}
+def apply[A, R &lt;: HList](l: A, r: A)
+(implicit genA: Generic.Aux[A, R],
+delta: SimpleDelta[R]): delta.Out =
+delta(genA.to(l), genA.to(r))
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Shapeless%20%3A%20Computing%20deltas&amp;url=https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505918846881"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505918846881"></script>
+   
+  
+</body>
+</html>
