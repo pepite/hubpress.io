@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 08:09:13 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Wed, 20 Sep 2017 08:11:00 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -887,48 +887,7 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>But you can become an expert biker too. And dutch people love to show how professional they are on this matter. You think you are strong because you can carry all your supermarket bags and still going fast enough? Look at this mother carrying their two children on the bike and passing you on the left. You think you are cool because you can handle the bike with one hand while scratching your head with the other one? I&#8217;ve seen many times people texting on their phones, with both hands, while turning the bike. I&#8217;ve so much to learn.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/25/Moving-from-Spain-to-the-Netherlands.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/25/Moving-from-Spain-to-the-Netherlands.html</guid><pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[A journey to ScalaCheck]]></title><description><![CDATA[<div id="preamble">
-<div class="sectionbody">
-<div class="paragraph">
-<p>From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one.</p>
-</div>
-<div class="paragraph">
-<p>I want to share some of that and show how my journey to <a href="https://gist.github.com/mariadroman/816d5b6848592aaacfa722c372dbccba">ScalaCheck</a> started. I will prove that it&#8217;s not complicated to start with and it can uncover deeply hidden bugs in your code.</p>
-</div>
-<div class="paragraph">
-<p>As developers, we need to be sure that we create code that performs exactly how it is meant to. This should be true in every possible scenario. However, how can we prove that our codebase actually does this for a wide range of data? Sometimes it is just not feasible to write innumerable amount of test cases for a specific function. We need to find a way to somehow prove our function works as expected in every possible case.</p>
-</div>
-<div class="paragraph">
-<p>Property-based testing provides another way of thinking, that was new to me, about writing tests. Sometimes it is better to prove that a function satisfies a specific property, rather than to write a number of tests which try to confirm it is working fine. One way of proving is to generate an appropriate amount of data and apply these data to your test suite. These generated data should all have the same specific property, hence the name property-based testing.</p>
-</div>
-<div class="paragraph">
-<p>As an example, imagine we want to test String concatenation. To do this we need to be sure that: <strong>For all given two strings, str1 and str2, the result of concatenating both strings must satisfy: str1.length + str2.length &gt;= str1.length</strong></p>
-</div>
-<div class="paragraph">
-<p>Traditionally, we would write a test like:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">test("Concatenate should generate a String of length s1+s2") {
-concatenate("", "").length == 0
-concatenate("Hello, ", "world.").length == 13 //Hello, world.    concatenate("Welcome to ","Lunatech.").length == 20 //Welcome to Lunatech.
-}
-But testing all possible combinations of 2 strings is impractical this way. In these cases, ScalaCheck is the recommended solution.</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Let&#8217;s first understand the basic concepts in ScalaCheck: Properties and Generators.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_properties">Properties</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>In ScalaCheck you can specify what the input parameters are and what their properties are that must be satisfied by the input. It uses a very elegant and intuitive way for defining properties:</p>
-</div>
-</div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/25/A-journey-to-Scala-Check.html</guid><category><![CDATA[scala]]></category><pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/25/Moving-from-Spain-to-the-Netherlands.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/25/Moving-from-Spain-to-the-Netherlands.html</guid><pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
 <p>On Feb 4 and 5th <strong>Francisco Canedo</strong>, Senior Developer at Lunatech and a Typesafe certified trainer, will be teaching Typesafe’s Fast Track to Scala Course at our office.</p>
 </div>
 <div class="paragraph">
