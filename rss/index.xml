@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 21 Sep 2017 07:53:39 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 21 Sep 2017 08:34:26 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -1230,7 +1230,68 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>If you’re there and are looking for a job with the kind of company that sponsors and takes all its employees to Scala Days, have a chat with us, there’ll be a lot of us walking around. If you can’t wait, get in touch with us right now.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</guid><category><![CDATA[scaladays]]></category><pubDate>Thu, 14 Apr 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</guid><category><![CDATA[scaladays]]></category><pubDate>Thu, 14 Apr 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb]]></title><description><![CDATA[<div class="sect1">
+<h2 id="_before_the_tutorial">Before the tutorial</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You should : - read  - <a href="https://www.playframework.com/documentation/2.5.x/ScalaActions">Play Documentation : ScalaActions</a> - <a href="https://www.playframework.com/documentation/2.5.x/ScalaForms">Play Documentation : ScalaForms</a> - <a href="https://www.playframework.com/documentation/2.5.x/ScalaForms">Play Documentation : ScalaJsonAutomated</a> - have  basic understanding of scala future transformation (map, flatMap) - have basic understanding of scala implicits - <a href="https://github.com/harrylaou/play2.5-skeleton-compileDI">clone play2.5-skeleton-compileDI</a>.</p>
+</div>
+<div class="paragraph">
+<p>This example uses <a href="https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection">compile-time dependency injection</a>. You can use <a href="https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection">run-time DI</a> if you feel confident about it. - download and install <a href="https://www.mongodb.com/download-center?jmp=homepage#community">mongodb</a> (brew install mongo for mac or check the video) - download and install <a href="http://3t.io/mongochef/">mongochef</a></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tutorial">Tutorial</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><a href="https://www.youtube.com/watch?v=-iPKaW1RuTI">Play framework - Beginner&#8217;s tutorial : Save an http post request to mongodb in 20 minutes</a>.</p>
+</div>
+<div class="paragraph">
+<p>Image</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_after_the_tutorial">After the tutorial</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You should be able to : - create a compile-time DI play project  - create a form in a play template - understand that a simple post in play requires two endpoints. - one to serve the form   - one to handle the post request - create a  model class - map a play Form to a case class - mapping - save a case class in Mongo DB</p>
+</div>
+<div class="paragraph">
+<p>Play2-reactivemongo documentation</p>
+</div>
+<div class="paragraph">
+<p>Be careful: we are using <strong>play2-reactivemongo</strong> plugin and not <strong>reactivemongo</strong> driver</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_bonus">Bonus</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Do you know the difference between Action and Action.async ?
+Find out how to return different result statuses pages.
+check</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.playframework.com/documentation/2.5.x/api/scala/index.html#play.api.mvc.Results">Play Results documentation</a></p>
+</li>
+<li>
+<p><a href="https://www.playframework.com/documentation/2.5.x/api/scala/index.html#play.api.mvc.Results">Play JSON basics</a></p>
+</li>
+<li>
+<p><a href="https://www.playframework.com/documentation/2.5.x/ScalaJsonHttp">Play JSON with HTTP</a></p>
+</li>
+<li>
+<p><a href="http://PlayJSONReads/Writes/FormatCombinators">Play JSON Reads/Writes/Format Combinators</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/25/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/25/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 25 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
 <p>On Feb 4 and 5th <strong>Francisco Canedo</strong>, Senior Developer at Lunatech and a Typesafe certified trainer, will be teaching Typesafe’s Fast Track to Scala Course at our office.</p>
 </div>
 <div class="paragraph">
