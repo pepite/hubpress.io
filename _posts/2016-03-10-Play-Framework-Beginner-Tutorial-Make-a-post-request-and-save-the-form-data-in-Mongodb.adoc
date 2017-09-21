@@ -1,5 +1,5 @@
 = Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb
-:published_at: 2016-01-25
+:published_at: 2016-03-10
 :hp-tags: play
 
 == Before the tutorial
