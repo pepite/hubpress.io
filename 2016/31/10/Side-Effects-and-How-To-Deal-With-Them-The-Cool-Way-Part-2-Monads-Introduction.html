@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505987746470" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction" />
+    <meta property="og:description" content="In part 1 of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html" />
+    <meta property="article:tag" content="monad" />
+    
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction" />
+    <meta name="twitter:description" content="In part 1 of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html" />
+    
+    <script type="application/ld+json">
+null
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+</head>
+<body class="post-template tag-monad nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head no-cover">
+    <nav class="main-nav  clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-monad">
+
+        <header class="post-header">
+            <h1 class="post-title">Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="Invalid date">Invalid date</time>  on <a href="https://pepite.github.io/hubpress.io/tag/monad/">monad</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>In <a href="http://www.lunatech.com/blog/WASQJiQAANmjwKxf/side-effects-and-how-to-deal-with-them-the-cool-way-part-1-pure-fonctions-and-functors">part 1</a> of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each fall under the indeterminism of side effects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_function_composition_and_a_slight_issue">Function Composition And a Slight Issue</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Remember that we mentioned that the <code>Option[A]</code> type in the standard library of scala is a functor, that actually handles the side effect of possible missing values. Now lets create two pure functions to compute integers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val f: Int =&gt; Int =
+x =&gt; x + 5
+
+val g: Int =&gt; Boolean =
+x =&gt; x &gt; 10
+
+val gof: Int =&gt; Boolean = g compose f
+
+gof(6)
+&gt; true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The essence of functional programming is doing this, create programs from composing small functions into larger functions, which provide us with the type safety and the determinism of pure functions. but what happens when we have functions that require to handle a side effect and return the appropriate type constructor?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val f: Int =&gt; Int =
+x =&gt; x + 5
+
+val filter10: Int =&gt; Option[Int] =
+x =&gt; if (x &gt; 10) Some(x) else None
+
+val gof: Int =&gt; Boolean = f compose filter10&gt;
+error: type mismatch;
+found   : Int =&gt; Option[Int] required: ? =&gt; Int
+f compose filter</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On this case our <code>map</code> function from our functor can help us:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val sumIfMoreThan10: Int =&gt; Option[Int] =	x =&gt; filter10(x).map(f)
+
+sumIfMoreThan10(15)&gt;
+Option[Int] = Some(20)
+
+sumIfMoreThan10(9)&gt;
+Option[Int] = None</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Great the <code>map</code> function is allowing a type of function composition, but now what happens when we want to compose more functions that return our functor?</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val f: Int =&gt; Int =
+x =&gt; x + 5
+
+val filter10: Int =&gt; Option[Int] =
+x =&gt; if (x &gt; 10) Some(x) else None
+
+val sumIfMoreThan10: Int =&gt; Option[Int] =
+x =&gt; filter10(x).map(f)
+
+val sumIfPositive: Int =&gt; Option[Int] =
+x =&gt; if (x &gt; 0) Some(f(x)) else None
+
+val total: Int =&gt; Option[Int] =
+x =&gt; sumIfPositive(6).map(sumIfMoreThan10)
+&gt; error: type mismatch;
+found   : Int =&gt; Option[Int]
+required: Int =&gt; Int
+val total: Int =&gt; Option[Int] =
+x =&gt; sumIfPositive(6).map(sumIfMoreThan10)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Oh no, we have a problem, we cannot compose side effects only using <code>map</code>, we need a new mechanism for combination. Lets do it then! lets introduce a function similar to <code>map</code> but called <code>flatMap</code>! (Because it will 'flatten' the structure between two functors.)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monads_the_combinator_we_were_looking_for">Monads! The Combinator We Were Looking For</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait Option[+A] {
+def value: A
+
+	def isDefined: Boolean
+
+	def map[B](f: A=&gt;B): Option[B] =
+    flatMap(x =&gt; Some(f(x)))
+
+	def flatMap[B](f: A=&gt;Option[B]): Option[B] =
+    if(isDefined) f(value) else None
+    }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you may have already guessed, the scala library already implements this function, but lets analyse it any way: <code>flatMap</code> is very similar to our last definition to <code>map</code>, but since the provided effectful function <code>f</code> is already giving us an <code>Option</code> then we do not need to wrap it. Also notice that we redefined <code>map</code> in terms of our new <code>flatMap</code>, clever right?</p>
+</div>
+<div class="paragraph">
+<p>Now this new mechanism will allow us to combine effectful functions! (functions that return a functor instead of a pure value).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val f: Int =&gt; Int =
+x =&gt; x + 5
+val filter10: Int =&gt; Option[Int] =
+x =&gt; if (x &gt; 10) Some(x) else None
+val sumIfMoreThan10: Int =&gt; Option[Int] =
+x =&gt; filter10(x).map(f)
+val sumIfPositive: Int =&gt; Option[Int] =
+x =&gt; if (x &gt; 0) Some(f(x)) else None
+val total: Int =&gt; Option[Int] =
+x =&gt; sumIfPositive(x).flatMap(sumIfMoreThan10)
+total(6)
+&gt; Option[Int] = Some(16)
+total(-1)
+&gt; Option[Int] = None</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Amazing right! And you just have been introduced to the concept of a monad! Any type constructor that supports the <code>flatMap</code> function is known as a monad. <code>flatMap</code> and <code>map</code> (a monad) allow us to not just decouple the side effect handling code from our functions, but also gives us the mechanism to compose our functions (effectful or pure) to make bigger programs that handle side effects perfectly and are more maintainable because we can split the program into smaller peaces which are easy to combine.</p>
+</div>
+</div>
+</div>
+<h1 id="_more_about_monads" class="sect0">More About Monads</h1>
+<div class="paragraph">
+<p>On the last post we created a type class to generalise the concept of a functor, lets do the same for a monad. Notice that we implemented <code>map</code> in terms of <code>flatMap</code>, which means that every type constructor with <code>flatMap</code> can automatically have a <code>map</code> function, hence every Monad is also a Functor!</p>
+</div>
+<div class="paragraph">
+<p>To further formalise the definition of a monad we need also a function called <code>pure</code> (which is actually the signature of an Applicative, but we can view Applicatives in another post [every Monad is an Applicative, and every Applicative is a Functor]). The <code>pure</code> function "lifts" a pure value into the context of a monad:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait Monad[F[_]] extends Functor[F] {
+def pure[A](a: A): F[A]
+def map[A, B](M: F[A])(f: A =&gt; B): F[B] =
+flatMap(M)(x =&gt; pure(f(x)))
+def flatMap[A, B](M: F[A])(f: A =&gt; F[B]): F[B]
+}</code></pre>
+</div>
+</div>
+<h1 id="_left_identity" class="sect0">Left identity:</h1>
+<div class="paragraph">
+<p>If we lift a pure value, and then flatMap with a monadic function (a function with the signature <code>A &#8658; F[A]</code> where <code>A</code> is a pure value and <code>F[_]</code> a Monad type constructor) then that must be equal to just passing the pure value through the monadic function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">pure(a).flatMap(f) === f(a)</code></pre>
+</div>
+</div>
+<h1 id="_right_identity" class="sect0">Right identity:</h1>
+<div class="paragraph">
+<p>If we take a monadic value <code>m</code> (a pure value that has been lifted to the context of a monad, has signature <code>M[A]</code>) and flatMap the <code>pure</code> function from it, that must be equal to the original <code>m</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">m.flatMap(pure) === m</code></pre>
+</div>
+</div>
+<h1 id="_associativity" class="sect0">Associativity:</h1>
+<div class="paragraph">
+<p>Let <code>m</code> be a monadic value, and <code>f</code> and <code>g</code> monadic functions, then it must be that flat mapping <code>f</code> and then <code>g</code> be equal to composing <code>f</code> and <code>g</code> first (using flatMap) and then using the resulting monadic function to flatMap from <code>m</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">m.flatMap(f).flatMap(g) === m.flatMap(\x =&gt; f(x).flatMap g)</code></pre>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Side%20Effects%20and%20How%20To%20Deal%20With%20Them%20The%20Cool%20Way%2C%20Part%202%3A%20Monads%20Introduction&amp;url=https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505987746470"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505987746470"></script>
+   
+  
+</body>
+</html>
