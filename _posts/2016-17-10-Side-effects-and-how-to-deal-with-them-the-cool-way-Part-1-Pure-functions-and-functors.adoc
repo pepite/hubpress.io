@@ -1,0 +1,5 @@
+= Side effects and how to deal with them the cool way, Part 1: Pure functions and functors
+// See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+:published_at: 2016-10-17
+:hp-tags: fp
+
