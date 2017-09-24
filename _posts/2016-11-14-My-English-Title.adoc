@@ -20,8 +20,9 @@ src.close()
 }
 ----
 Then it is not too difficult to recursively convert the iterator to a Scala Stream of lines, without processing the whole iterator, using lazy evaluation. So we would end up with a function with signature:
-----
+
 [source,scala]
+----
    def read(pathToFile: Path): Stream[String]
 ----
 There are few problems that can arise from this function:
@@ -37,7 +38,7 @@ The idea for solving the second problem is *to separate the logic of computation
 
 Right now it may seem too much is going on. But as with every other paradigm, once we get a hands-on experience, we are going to feel comfortable working with it. The important conceptual thing to remember is that the left type `F` is responsible for closing resources and assigning operations to threads. In what follows, we are going to see examples of functional streams using the library *FS2*, a library that implements the above ideas.
 
-= How to Use FS2
+== How to Use FS2
 This is how we use FS2 for reading a file...
 
 First we must add its dependencies:
@@ -110,6 +111,7 @@ someFS2Stream.pull[Task, A]((handle: Handle[Task, A])
 =>                             using()(handle, emptyAccumulator)
 )
 ----
+
 == Conclusion
 *FS2* is a masterpiece library that allows us to work with side effects in a resource-safe, consistent, and memory-efficient way. It does all that in a fully functional and composable way, and on top of all that, it supports concurrency. In another blog-post I am going to explain how we can do concurrent computations with FS2.
 
