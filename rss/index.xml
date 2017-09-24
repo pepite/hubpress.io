@@ -1,4 +1,382 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Thu, 21 Sep 2017 09:55:46 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 24 Sep 2017 21:02:55 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Side effects and how to deal with them the cool way, Part 1: Pure functions and functors]]></title><description><![CDATA[<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Functional programming has become very popular, and one of the concepts that have gained popularity with it is the concept of "side effects", but what are really side effects and why functional programming is so good at handling them?</p>
+</div>
+<div class="paragraph">
+<p>I would first argue that most of the power of functional programming comes from leveraging pure mathematical concepts into the world of software engineering; a lot of people start getting scared by the only mention of mathematics, but do not worry! Math is cool, and easier than you would think if given patience, just trust me for now. Math gives us a lot of power, power that we can use to create reliable, scalable, error free, and simply right software.</p>
+</div>
+<div class="paragraph">
+<p>Lets first talk of one of those powerful and simple concepts that can greatly be used in software engineering: pure functions.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_pure_functions">Pure Functions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>function: In mathematics the definition of a function is a relation from a set of things A to a set of things B, and for each thing A there must be only one thing B related.</p>
+</div>
+<div class="paragraph">
+<p>And why is it useful? Because it is completely deterministic, if you have a function <code>Int&#8658;Int</code> you know that it will only accept integers, and that it will always give back an integer, and this actually communicates a lot, for example lets read this function:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">// Boolean =&gt; Booleandef
+f(x: Boolean): Boolean</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>How many implementations of this function can there possible be? Only two, either the identity function, or the negation function, because if you have a boolean, the only thing that we can do with it is either leave it like that or change it to the only other possible value.</p>
+</div>
+<div class="paragraph">
+<p>Another useful thing that comes with this determinism is function composition (which wont be explained here, but if you don&#8217;t know what it is, please! search it on the internet and be amazed :) ). It is guaranteed that the new function produced by the composition will work thanks to the determinism of its domain and codomain (what it receives and what it returns). And by composing functions is how we create programs.</p>
+</div>
+<div class="paragraph">
+<p>Now in functional programming a pure function is just a function which respects the definition of a formal mathematical function, and by doing this we gain all the advantages (properties by formal proofs); but alas! the real world doesn&#8217;t work like that, we are surrounded by indeterminism! Values could be null, exceptions are thrown, IO may fail! And a pure function simply cannot accept a null value, or return an exception, because if a pure function says it will return an Int, then an Int is what it will return! Otherwise it simply is not a function, and we lose all the promised properties and advantages. And this little demons my friends are called side effects, what ever that possibly breaks the function signature is a side effect (possibly = indeterminism) (function signature = domain and codomain).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_handling_side_effects_v1_a_map_function">Handling Side Effects v1: A map function</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>So we could do all kind of mumblejumble inside our functions to try to handle specific side effects (like try-catch statements for handling errors), but that is not extensible or even nice to read, we want to capture the essence of a side effect, keep them in a context, and then somehow apply our pure functions to it, so that our code stays clean and easy.</p>
+</div>
+<div class="paragraph">
+<p>Lets start with the possible missing value side effect (a.k.a. null pointer exception), in this case we want to apply our pure functions ONLY when the value actually exists, since we are using scala lets abstract it into a trait and two specific sub types:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait Maybe[+A]
+case class Just[A](value: A) extends Maybe[A]
+case object NotThere extends Maybe[Nothing]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Just</code> is the type that represents and existent value, and <code>NotThere</code> the one for when it is missing, this, as you can see is a proper abstraction of the side effect.</p>
+</div>
+<div class="paragraph">
+<p>Now lets code a simple pure function for integers:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">// Int =&gt; Int
+def plusOne(x: Int): Int = x+1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see our pure code is completely decoupled from the side effect code (this is what functional programmers like to brag all the time about, pushing the side effects from our pure code). But now in order to use our pure function with a Maybe integer we need to add some methods.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait Maybe[+A] {
+def value: A
+def isDefined: Boolean
+def map(f: A=&gt;B): Maybe[B] = {
+if(isDefined) Just(f(value)) else NotThere
+}
+}
+
+case class Just[A](value: A) extends Maybe[A] {
+def isDefined: Boolean = true
+}
+
+case object NotThere extends Maybe[Nothing] {
+def isDefined: Boolean = false
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So the important function that we added here is <code>map(f: A&#8658; B): Maybe[B]</code>, as you can see is a higher order function because it takes an other function (our pure functions), and will only apply them to the value if and only if the value is defined. Now lets make a useful companion object:
+And using our <code>plusOne</code> pure function, what we can do is
+something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val x: Int = 8
+val maybeX = Maybe(x).map(plusOne)
+&gt; maybeX: Maybe[Int] = Just(9)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now what if <code>x</code> was actually a null value? well then <code>maybeX: Maybe[Int] = NotThere</code> and no horrible null pointer exception is thrown, also we can handle that or exit the <code>Maybe</code> wrapper like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val x: Int = 8
+val y = Maybe(x).map(plusOne) match {
+case Just(i) =&gt; i
+case NotThere =&gt; 0
+}
+&gt; maybeX: Int = 9</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now lets realise that our true operation (the <code>plusOne</code> function) was kept nice and pure, and handling null values is now completely decoupled from all the countless functions that potentially could have ended with a terrible:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">if (x == null)
+...else ...</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also do not worry about coding all of these, since Scala already comes with these implemented:
+Our Code   Scala</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">Maybe[A] = Option[A]
+Just(a)  = Some(a)
+NotThere = None</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_handling_side_effects_v2_functors">Handling Side Effects v2: Functors</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>There is yet another spicy concept from functional programming that we will talk about: Functors. And we actually just created one! The formal definition of a functor is actually a little bit misleading as how they are used in software engineering, so lets keep it informal for now (as much as it pains).</p>
+</div>
+<div class="paragraph">
+<p>If a normal function is a mapping from a thing A to a thing B, then analogously a functor is a mapping inside a higher kinded type F[A] to F[B]. In this case the F[_] is the "higher kinded type" because it requires another type to become a type itself, for example our Maybe[\_] type. The Maybe <code>map</code> function is what it makes it a functor, since we are in the end going from some Maybe[A] to another Maybe[B].</p>
+</div>
+<div class="paragraph">
+<p>We could even abstract and decouple the concept of a Functor like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">trait Functor[F[_]] {
+def map[A, B](fa: F[A])(f: A =&gt; B): F[B]
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can see this as a functional design pattern, using Functors to decouple side effects from our pure functions. Other functors implemented by the scala library are:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">List[_]
+Future[_]
+Try[_]
+Either[_, _]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And with functional libraries like <code>scalaz</code> or <code>cats</code> you will find many more that handle other type of side effects.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Side effects can become the real arch enemy of programmers, but with powerful functional design patterns we can control them and create type safe, reliable programs. We will see in the next post an even more powerful design patter that derives from the need of controlling side effect, the always famous Monad.</p>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/10/17/Side-effects-and-how-to-deal-with-them-the-cool-way-Part-1-Pure-functions-and-functors.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/10/17/Side-effects-and-how-to-deal-with-them-the-cool-way-Part-1-Pure-functions-and-functors.html</guid><category><![CDATA[fp]]></category><pubDate>Mon, 17 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
+</div>
+<div class="paragraph">
+<p>One of Scala&#8217;s main selling points is its interoperability with Java.</p>
+</div>
+<div class="paragraph">
+<p>However, this double-edged sword can be problematic, once you turned into a "functional programmer fundamentalist". This paradigms can make your program not only less beautiful but also harder to understand and reason about. How can we wrap Java libraries in a way that we can still enjoy all the benefits of pure functional programming?</p>
+</div>
+<div class="paragraph">
+<p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional IO with FS2 Streams]]></title><description><![CDATA[<div class="sect1">
+<h2 id="_functional_io_with_fs2_streams">Functional IO with FS2 Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&#8217;s needed to do some side effects e.g. when we want to read from file. One straight-forward way of doing it is to get a <code>BufferedSource</code>, and process it using an iterator as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def readFromFile(fileName: String) {
+val src: BufferedSource = io.Source.fromFile(fileName)
+val it: Iterator[String] = src.getLines
+val _ = while(it.hasNext) {
+val line = it.next()
+println(line)
+}
+src.close()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then it is not too difficult to recursively convert the iterator to a Scala Stream of lines, without processing the whole iterator, using lazy evaluation. So we would end up with a function with signature:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[source,scala]
+   def read(pathToFile: Path): Stream[String]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are few problems that can arise from this function:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, if an exception occurs and we still haven&#8217;t reached the end of the resulting Stream, or if we forget to close the <code>BufferedSource</code>, then the file would stay open, which is called resource leaking. Therefore, the above function is not resource-safe.- Second and more tricky, when we call the function read for a 2nd time, it may return a different result as someone may have modified the file between the two calls. We are forced to have some intrinsic knowledge about the file, therefore, the function <code>read</code> breaks referential transparency.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this blog-post we are going to tackle those two problems and learn how to avoid imperative troublesome IO using a specialized Scala library - FS2 (previously known as Scalaz-Stream).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_idea_of_functional_streams">The Idea of Functional Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The idea for solving the problem of resource-safety is to define a wrapper data type - <code>Process[F[<em>],O]</code>, where the left generic type <code>F</code> would know how to close the resource (the file) when it&#8217;s needed. In that way we can guarantee resource-safety without having to do anything non-related to reading from file (such as handling an exception). We can think of <code>Process[F[</em>],O]</code> as a type that represents a <strong>Stream builder</strong>, possibly producing/using some side effect. For example when reading from file we would work with <code>Process[Task, String]</code>, where <code>Task</code> knows how to execute and handle an operation (by assigning it to a thread). But note that it doesn&#8217;t start the execution immediately. It only starts when we call some of its executor-methods. Another example is when writing to output stream, in which case we  would use <code>Process[Task, Unit]</code>. Hence, we can say <code>Process[F[_],O]</code> is like a function <code>F[O] &#8658; Stream[O]</code>, but more powerful, and we will see exactly how is it more powerful.</p>
+</div>
+<div class="paragraph">
+<p>The idea for solving the second problem is <strong>to separate the logic of computation from actual computation</strong>. Note that the logic of how reading from file is done doesn&#8217;t change through the course of our program&#8217;s lifecycle. Only the result of executing that logic changes (since it involves a side-effect). So we are going to say that the left type - <code>F[O]</code> in <code>Process</code> knows how to evaluate effects. In that way we can represent our logic of computation, and delegate the responsibilities of executing that logic (and handling possible exceptions of the execution) to <code>F</code>. Most often we would substitute the generic type <code>F</code>  with  <code>Task</code> (which in addition allows concurrent composition of streams).</p>
+</div>
+<div class="paragraph">
+<p>Right now it may seem too much is going on. But as with every other paradigm, once we get a hands-on experience, we are going to feel comfortable working with it. The important conceptual thing to remember is that the left type <code>F</code> is responsible for closing resources and assigning operations to threads. In what follows, we are going to see examples of functional streams using the library <strong>FS2</strong>, a library that implements the above ideas.</p>
+</div>
+</div>
+</div>
+<h1 id="_how_to_use_fs2" class="sect0">How to Use FS2</h1>
+<div class="paragraph">
+<p>This is how we use FS2 for reading a file&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>First we must add its dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">"co.fs2" %% "fs2-core" % "0.9.1",
+"co.fs2" %% "fs2-io" % "0.9.1",</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, similar to Scala&#8217;s <code>Future</code>, we must provide a strategy for execution:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">implicit val strategy = Strategy.fromFixedDaemonPool(4)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we define the pipeline of transformations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val lines: Stream[Task, String] =
+io.file.readAllAsync[Task](pathToFile, 4096)
+.through(text.utf8Decode)
+ .through(text.lines)
+----
+val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Stream[F[<em>], O]</code> is the FS2 implementation of what we denoted by <code>Process[F[</em>],O]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that the above code doesn&#8217;t read anything. We postpone it as much as possible, usually until the end of the world (our <code>main</code> method). At that point we must do two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, we compile the pipeline of transformations, combining all the intermediate Tasks into a single Task. We do that by calling <code>lines.run</code>, which gives us a` Task[Unit]<code>.- Second, we execute the pipeline by calling `lines.run.unsafeRun()</code>, so we end up with a single result-value, in this case <code>Unit</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, <code>Stream[F[<em>], O]</code> is also a <code>Monad</code>, so we can do almost everything that we can do with a <code>Seq</code>. That is one argument why the FS2 is much more powerful than a builder-function <code>F[</em>] &#8658; O</code>.</p>
+</div>
+<h1 id="_pulling" class="sect0">Pulling</h1>
+<div class="paragraph">
+<p>Another very useful and powerful functionality that FS2 supports is pulling. Sometimes we don&#8217;t want to map over all the elements of an FS2Stream , but halt the process of mapping and end up with a smaller FS2Stream. We can implement that with the method <code>pull</code> defined on FS2Stream:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">.pull[Task, Path](using: (Handle[Task, Path]) =&gt; Pull[Task, Path, Nothing]))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we wrote FS2Stream, so to avoid mixing it with the standard Scala <code>Stream</code>.</p>
+</div>
+<div class="paragraph">
+<p>Now comes the tricky part - how to define the auxiliary function <code>using</code>. The simplest  way to explain that function is to say <code>Handle</code> knows how to retrieve the next element in a FS2Stream, and <code>Pull</code> knows how to pick up elements that we want to select and output as a side-effect of the pulling.</p>
+</div>
+<div class="paragraph">
+<p>For example, imagine we want to output elements produced in the process of iterating, but produce element only in some steps of the iteration. Then we can do the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task,
+B]) =&gt; Pull[Task, A, Nothing] = {  newHandle: Handle[Task, A]
+
+=&gt;    val nextPull: Pull[Task, A, Handle[Task, A]] =
+for {      (nextElement: A, newHandle: Handle[Task, A])
+&lt;- newHandle.await1
+
+updatedAcc = ...
+
+//update the accumulator and pass back the updated one      _ &lt;- someCheckingOfA match {
+case ... =&gt;          Pull.pure(())
+//nothing to pick up         case ... =&gt;          Pull.output1(something)
+//pick up something
+}
+} yield (nextHandle, updatedAcc)
+
+    nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt;      using()(nextHandle)    )
+    }`</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>, and we would apply <code>using()</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A])
+=&gt;                             using()(handle, emptyAccumulator)
+)</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>FS2</strong> is a masterpiece library that allows us to work with side effects in a resource-safe, consistent, and memory-efficient way. It does all that in a fully functional and composable way, and on top of all that, it supports concurrency. In another blog-post I am going to explain how we can do concurrent computations with FS2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_useful_links">Useful Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.youtube.com/watch?v=cahvyadYfX8&amp;list=PLFrwDVdSrYE6PVD_p6YQLAbNaEHagx9bW&amp;index=1Intro">to Functional Streams for Scala</a></p>
+</li>
+<li>
+<p><a href="http://www.slideshare.net/InfoQ/compositional-io-stream-in-scalaCompositional">I/O Stream in Scala</a></p>
+</li>
+<li>
+<p><a href="https://github.com/functional-streams-for-scala/fs2Github">official repository for FS2</a></p>
+</li>
+<li>
+<p><a href="https://gist.github.com/djspiewak/d93a9c4983f63721c41cTutorial">for scalaz-stream</a></p>
+</li>
+<li>
+<p><a href="https://github.com/eamelink/fs2-keystores-poc/blob/master/src/main/scala/MyApp.scala">Example of FS2 pulling</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/11/14/My-English-Title.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/11/14/My-English-Title.html</guid><category><![CDATA[fp]]></category><pubDate>Mon, 14 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>In <a href="http://www.lunatech.com/blog/WASQJiQAANmjwKxf/side-effects-and-how-to-deal-with-them-the-cool-way-part-1-pure-fonctions-and-functors">part 1</a> of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each fall under the indeterminism of side effects.</p>
@@ -177,18 +555,7 @@ def flatMap[A, B](M: F[A])(f: A =&gt; F[B]): F[B]
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">m.flatMap(f).flatMap(g) === m.flatMap(\x =&gt; f(x).flatMap g)</code></pre>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/31/10/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</guid><category><![CDATA[monad]]></category><pubDate>Invalid Date</pubDate></item><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
-<p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
-</div>
-<div class="paragraph">
-<p>One of Scala&#8217;s main selling points is its interoperability with Java.</p>
-</div>
-<div class="paragraph">
-<p>However, this double-edged sword can be problematic, once you turned into a "functional programmer fundamentalist". This paradigms can make your program not only less beautiful but also harder to understand and reason about. How can we wrap Java libraries in a way that we can still enjoy all the benefits of pure functional programming?</p>
-</div>
-<div class="paragraph">
-<p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ clojure]]></category><category><![CDATA[ fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb]]></title><description><![CDATA[<div class="sect1">
+</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</guid><category><![CDATA[monad]]></category><pubDate>Mon, 31 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_before_the_tutorial">Before the tutorial</h2>
 <div class="sectionbody">
 <div class="paragraph">
