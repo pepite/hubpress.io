@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 24 Sep 2017 21:02:55 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Side effects and how to deal with them the cool way, Part 1: Pure functions and functors]]></title><description><![CDATA[<div class="sect1">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><generator>RSS for Node</generator><lastBuildDate>Sun, 24 Sep 2017 21:07:01 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Side effects and how to deal with them the cool way, Part 1: Pure functions and functors]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -212,8 +212,7 @@ src.close()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>[source,scala]
-   def read(pathToFile: Path): Stream[String]</pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">   def read(pathToFile: Path): Stream[String]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -245,7 +244,9 @@ src.close()
 </div>
 </div>
 </div>
-<h1 id="_how_to_use_fs2" class="sect0">How to Use FS2</h1>
+<div class="sect1">
+<h2 id="_how_to_use_fs2">How to Use FS2</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>This is how we use FS2 for reading a file&#8230;&#8203;</p>
 </div>
@@ -294,6 +295,8 @@ val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` 
 </div>
 <div class="paragraph">
 <p>In addition, <code>Stream[F[<em>], O]</code> is also a <code>Monad</code>, so we can do almost everything that we can do with a <code>Seq</code>. That is one argument why the FS2 is much more powerful than a builder-function <code>F[</em>] &#8658; O</code>.</p>
+</div>
+</div>
 </div>
 <h1 id="_pulling" class="sect0">Pulling</h1>
 <div class="paragraph">

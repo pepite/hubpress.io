@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506286975762" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506287221045" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -110,8 +110,7 @@ src.close()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>[source,scala]
-   def read(pathToFile: Path): Stream[String]</pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">   def read(pathToFile: Path): Stream[String]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -143,7 +142,9 @@ src.close()
 </div>
 </div>
 </div>
-<h1 id="_how_to_use_fs2" class="sect0">How to Use FS2</h1>
+<div class="sect1">
+<h2 id="_how_to_use_fs2">How to Use FS2</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>This is how we use FS2 for reading a file&#8230;&#8203;</p>
 </div>
@@ -192,6 +193,8 @@ val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` 
 </div>
 <div class="paragraph">
 <p>In addition, <code>Stream[F[<em>], O]</code> is also a <code>Monad</code>, so we can do almost everything that we can do with a <code>Seq</code>. That is one argument why the FS2 is much more powerful than a builder-function <code>F[</em>] &#8658; O</code>.</p>
+</div>
+</div>
 </div>
 <h1 id="_pulling" class="sect0">Pulling</h1>
 <div class="paragraph">
@@ -345,8 +348,8 @@ case ... =&gt;          Pull.pure(())
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506286975762"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506286975762"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506287221045"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506287221045"></script>
    
   
 </body>
