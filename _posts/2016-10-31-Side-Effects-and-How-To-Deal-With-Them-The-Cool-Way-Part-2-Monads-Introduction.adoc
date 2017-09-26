@@ -3,7 +3,7 @@
 :published_at: 2016-10-31
 :hp-tags: monad
 
-:hp-image:https://prismic-io.s3.amazonaws.com/lunatech%2F63f8716c-161c-4613-b1bd-004ec8af96e0_laptop-op-schoot-veroorzaakt-tijdelijke-onvruchtbaarheid.jpg
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F63f8716c-161c-4613-b1bd-004ec8af96e0_laptop-op-schoot-veroorzaakt-tijdelijke-onvruchtbaarheid.jpg
 
 In http://www.lunatech.com/blog/WASQJiQAANmjwKxf/side-effects-and-how-to-deal-with-them-the-cool-way-part-1-pure-fonctions-and-functors[part 1] of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each fall under the indeterminism of side effects.
 
