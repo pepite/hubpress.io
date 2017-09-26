@@ -1,6 +1,8 @@
 = Shapeless : Computing deltas
+
 :published_at: 2016-09-19
 :hp-tags: shapeless
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F6cb692d8-33c6-434b-94ee-acaec8070163_adobestock_77959657.jpeg
 
 *A real life exemple*
 
