@@ -2,14 +2,31 @@
   "meta": {
     "username": "pepite",
     "repositoryName": "hubpress.io",
-    "branch": "gh-pages"
+    "branch": "gh-pages",
+    "cname": ""
   },
   "site": {
     "title": "Lunatech's engineer blog",
     "description": "FP, Scala and Java",
-    "logo": "http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png"
+    "logo": "http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png",
+    "cover": "https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg",
+    "delay": "",
+    "postsPerPage": "",
+    "googleAnalytics": "",
+    "disqus": ""
   },
-  "socialnetwork": {},
+  "socialnetwork": {
+    "email": "",
+    "github": "",
+    "twitter": "",
+    "facebook": "",
+    "googleplus": "",
+    "instagram": "",
+    "pinterest": "",
+    "flickr": "",
+    "linkedin": "",
+    "stackoverflow": ""
+  },
   "theme": {
     "name": "casper"
   },
