@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1505920299786" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455007501" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -20,10 +20,11 @@
     <meta name="referrer" content="origin" />
     
     <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="article" />
     <meta property="og:title" content="Shapeless : Computing deltas" />
     <meta property="og:description" content="A real life exemple This is the code and some personal notes from the Shapeless? - Easy! talk where Valentin Kasas explains in a great way an advanced example of a real life use case (with slides). Computing deltas Imagine we want to be able to determine what are the" />
     <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html" />
+    <meta property="article:published_time" content="2016-09-19T00:00:00.000Z" />
     <meta property="article:tag" content="shapeless" />
     
     <meta name="twitter:card" content="summary" />
@@ -32,11 +33,29 @@
     <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html" />
     
     <script type="application/ld+json">
-null
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Lunatech's engineer blog",
+    "author": {
+        "@type": "Person",
+        "name": "Antoinelunatech",
+        "image": "https://avatars3.githubusercontent.com/u/32063588?v=4",
+        "url": "https://pepite.github.io/hubpress.io/author/Antoinelunatech/"
+    },
+    "headline": "Shapeless : Computing deltas",
+    "url": "https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html",
+    "datePublished": "2016-09-19T00:00:00.000Z",
+    "keywords": "shapeless",
+    "description": "A real life exemple This is the code and some personal notes from the Shapeless? - Easy! talk where Valentin Kasas explains in a great way an advanced example of a real life use case (with slides). Computing deltas Imagine we want to be able to determine what are the"
+}
     </script>
 
     <meta name="generator" content="HubPress" />
     <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css">
+    
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 </head>
 <body class="post-template tag-shapeless nav-closed">
 
@@ -102,10 +121,9 @@ null
 final case class Identical[A](value: A) extends Diff[A]
 final case class Different[A](left: A, right: A) extends Diff[A]
 object Diff {
-def apply[A](left: A, right: A): Diff[A] =
-  if (left == right) Identical(left)
-  else       Different(left, right)
-  }</pre>
+	def apply[A](left: A, right: A): Diff[A] =
+    	if (left == right) Identical(left) else Different(left, right)
+}</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -118,29 +136,29 @@ def apply[A](left: A, right: A): Diff[A] =
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">trait SimpleDelta[R &lt;: HList] extends DepFn2[R, R] {
   type Out &lt;: HList //Result is bounded by HList
-  }
-  object SimpleDelta {
+}
+
+object SimpleDelta {
  /** type alias Aux adds as a type parameter the return Type.
-   * It is convenient in order to constrain it
-   * by passing it as a type parameter.
-   */
-type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I]{ type Out = O }
-//Recursive Algorithm
-implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
-type Out = HNil
-def apply(l: HNil, r: HNil): Out = HNil
-}
-implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList]
-(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
-new SimpleDelta[H :: T]{
-type Out = Diff[H] :: DT
-def apply(l: H :: T, r: H :: T) : Out =
-Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
-}
-def apply[A, R &lt;: HList](l: A, r: A)
-(implicit genA: Generic.Aux[A, R],
-delta: SimpleDelta[R]): delta.Out =
-delta(genA.to(l), genA.to(r))
+  * It is convenient in order to constrain it
+  * by passing it as a type parameter.
+  */
+	type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I] {
+    	type Out = O
+	}
+
+	//Recursive Algorithm
+	implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+		type Out = HNil
+		def apply(l: HNil, r: HNil): Out = HNil
+	}
+
+	implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList](implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] = new SimpleDelta[H :: T] {
+		type Out = Diff[H] :: DT
+		def apply(l: H :: T, r: H :: T) : Out = Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+	}
+
+	def apply[A, R &lt;: HList](l: A, r: A)(implicit genA: Generic.Aux[A, R], delta: SimpleDelta[R]): delta.Out = delta(genA.to(l), genA.to(r))
 }</code></pre>
 </div>
 </div>
@@ -216,8 +234,8 @@ delta(genA.to(l), genA.to(r))
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1505920299786"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1505920299786"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455007501"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455007501"></script>
    
   
 </body>

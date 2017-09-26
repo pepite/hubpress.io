@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>https://pepite.github.io/hubpress.io</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 26 Sep 2017 19:28:05 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>https://pepite.github.io/hubpress.io</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 26 Sep 2017 19:43:27 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Team Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -470,10 +470,9 @@ check</p>
 final case class Identical[A](value: A) extends Diff[A]
 final case class Different[A](left: A, right: A) extends Diff[A]
 object Diff {
-def apply[A](left: A, right: A): Diff[A] =
-  if (left == right) Identical(left)
-  else       Different(left, right)
-  }</pre>
+	def apply[A](left: A, right: A): Diff[A] =
+    	if (left == right) Identical(left) else Different(left, right)
+}</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -486,29 +485,29 @@ def apply[A](left: A, right: A): Diff[A] =
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">trait SimpleDelta[R &lt;: HList] extends DepFn2[R, R] {
   type Out &lt;: HList //Result is bounded by HList
-  }
-  object SimpleDelta {
+}
+
+object SimpleDelta {
  /** type alias Aux adds as a type parameter the return Type.
-   * It is convenient in order to constrain it
-   * by passing it as a type parameter.
-   */
-type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I]{ type Out = O }
-//Recursive Algorithm
-implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
-type Out = HNil
-def apply(l: HNil, r: HNil): Out = HNil
-}
-implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList]
-(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
-new SimpleDelta[H :: T]{
-type Out = Diff[H] :: DT
-def apply(l: H :: T, r: H :: T) : Out =
-Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
-}
-def apply[A, R &lt;: HList](l: A, r: A)
-(implicit genA: Generic.Aux[A, R],
-delta: SimpleDelta[R]): delta.Out =
-delta(genA.to(l), genA.to(r))
+  * It is convenient in order to constrain it
+  * by passing it as a type parameter.
+  */
+	type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I] {
+    	type Out = O
+	}
+
+	//Recursive Algorithm
+	implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+		type Out = HNil
+		def apply(l: HNil, r: HNil): Out = HNil
+	}
+
+	implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList](implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] = new SimpleDelta[H :: T] {
+		type Out = Diff[H] :: DT
+		def apply(l: H :: T, r: H :: T) : Out = Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+	}
+
+	def apply[A, R &lt;: HList](l: A, r: A)(implicit genA: Generic.Aux[A, R], delta: SimpleDelta[R]): delta.Out = delta(genA.to(l), genA.to(r))
 }</code></pre>
 </div>
 </div>
