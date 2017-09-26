@@ -3,8 +3,7 @@
 :published_at: 2016-12-09
 :hp-tags: scala, clojure, fp
 
-:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F17ed054b-273c-4832-b4a5-2d1051795389_it.jpg
-
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech/8d5f37c9c903077b37968bbfbf66390924ad8d97_2016-12-19-photo-00000388.jpg
 
 Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Team Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).
 
