@@ -3,7 +3,8 @@
 :published_at: 2016-08-15
 :hp-tags: play
 
-:hp-image: https://prismic-io.s3.amazonaws.com/lunatech/8d5f37c9c903077b37968bbfbf66390924ad8d97_2016-12-19-photo-00000388.jpg
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F4c3ca22c-a5fe-4cb7-a72b-c857a94f4ddd_keyboard-428326__340.jpg
+
 
 It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this
 
