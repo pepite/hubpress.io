@@ -72,7 +72,7 @@ val lines: Stream[Task, String] =
 ----
 
 
-`val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.
+`val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a `Stream[Task, Byte].through(text.utf8Decode)` - we get a `Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final `Stream[Task, String]` representing lines.
 
 `Stream[F[_], O]` is the FS2 implementation of what we denoted by `Process[F[_],O]`.
 
