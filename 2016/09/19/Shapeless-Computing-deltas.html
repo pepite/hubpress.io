@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455112960" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455151762" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -117,13 +117,13 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sealed trait Diff[A]
+<pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait Diff[A]
 final case class Identical[A](value: A) extends Diff[A]
 final case class Different[A](left: A, right: A) extends Diff[A]
 object Diff {
 	def apply[A](left: A, right: A): Diff[A] =
     	if (left == right) Identical(left) else Different(left, right)
-}</pre>
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -234,8 +234,8 @@ object SimpleDelta {
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455112960"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455112960"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455151762"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455151762"></script>
    
   
 </body>
