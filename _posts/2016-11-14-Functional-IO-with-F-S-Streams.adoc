@@ -1,9 +1,9 @@
 = Functional IO with FS2 Streams
 // See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
-:hp-image: /covers/cover.png
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F7ab7d7e6-1699-49e7-8160-0c81a64520d6_adobestock_80894400.jpeg
 :published_at: 2016-11-14
 :hp-tags: fp
-:hp-alt-title: My English Title
+
 
 == Functional IO with FS2 Streams
 One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it's needed to do some side effects e.g. when we want to read from file. One straight-forward way of doing it is to get a `BufferedSource`, and process it using an iterator as shown below. 
