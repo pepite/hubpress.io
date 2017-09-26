@@ -10,13 +10,18 @@ Many people say that Scala is like Java but without semicolons, but I disagree. 
 
 [source,java]
 ----
-public Foo someMethod(Foo foo, Bar bar) {		Foo firstResult = foo.doSomething();		Bar secondResult = bar.doOtherThing();		Foo finalResult = doLastThing(firstResult, secondResult);		return finalResult;		}
+public Foo someMethod(Foo foo, Bar bar) {		
+  Foo firstResult = foo.doSomething();		
+  Bar secondResult = bar.doOtherThing();		
+  Foo finalResult = doLastThing(firstResult, secondResult);		
+  return finalResult;		
+}
 ----
 We could have compressed that into something smaller, but usually Java developers love verbose stuff: to define variables with long names so everything looks clear and people can understand what’s happening on the code. On the other hand, a Scala developer would do something like this:
 
-[source,java]
+[source,scala]
 ----
-def someMethod(foo: Foo, bar : Bar) : Foo = 		doLastThing(foo.doSomething, bar.doOtherThing)
+def someMethod(foo: Foo, bar : Bar) : Foo = doLastThing(foo.doSomething, bar.doOtherThing)
 ----
 Basically, the main thing that me, as a Java developer, saw when reading Scala code is “try to put everything on the same line”, and that makes things a bit difficult to understand at the beginning. But in the end your Scala code ends being very small and powerful.
 
@@ -27,7 +32,10 @@ Recent versions of Java have implemented new libraries with similar tools as in 
 In Scala, the map method (and the rest of their friends: flatMap, flatten, head, tail, filter, etc) makes iterating through Collections so easy and safe, that you even try to use it as much as you possibly can. You don't have to worry about IndexOutOfBoundsException anymore. When you can transform this:
 [source,java]
 ----
-for (int i = 0; i < intList.size(); i++) {		if (intList.get(i) % 2 == 0)			intList.set(i, intList.get(i) + 1)	}
+for (int i = 0; i < intList.size(); i++) {		
+	if (intList.get(i) % 2 == 0)			
+    	intList.set(i, intList.get(i) + 1)	
+}
 
 ----
 Into this:
@@ -36,6 +44,7 @@ Into this:
 ----
 intList.map(x => if (x % 2 == 0) x + 1 else x)
 ----
+
 Your fingers will be glad you that you've switched to Scala.
 
 But the award of “most surprising thing for people that comes from Java” goes to… vals and immutable stuff!
