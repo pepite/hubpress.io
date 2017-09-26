@@ -6,6 +6,7 @@
 
 
 == Functional IO with FS2 Streams
+
 One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it's needed to do some side effects e.g. when we want to read from file. One straight-forward way of doing it is to get a `BufferedSource`, and process it using an iterator as shown below. 
 
 [source,scala]
@@ -78,7 +79,7 @@ val lines: Stream[Task, String] =
 
 Note that the above code doesn't read anything. We postpone it as much as possible, usually until the end of the world (our `main` method). At that point we must do two things:
 
-- First, we compile the pipeline of transformations, combining all the intermediate Tasks into a single Task. We do that by calling `lines.run`, which gives us a` Task[Unit]`.- Second, we execute the pipeline by calling `lines.run.unsafeRun()`, so we end up with a single result-value, in this case `Unit`.
+- First, we compile the pipeline of transformations, combining all the intermediate Tasks into a single Task. We do that by calling `lines.run`, which gives us a `Task[Unit]`.- Second, we execute the pipeline by calling `lines.run.unsafeRun()`, so we end up with a single result-value, in this case `Unit`.
 
 In addition, `Stream[F[_], O]` is also a `Monad`, so we can do almost everything that we can do with a `Seq`. That is one argument why the FS2 is much more powerful than a builder-function `F[_] => O`.
 
