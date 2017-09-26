@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506448538190" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506448707363" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -93,7 +93,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
+<pre class="highlight"><code class="language-json" data-lang="json">{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
 </div>
 </div>
 </div>
@@ -106,7 +106,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -114,7 +114,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -130,7 +130,7 @@
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
+<pre class="highlight"><code class="language-scala" data-lang="scala">import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
 
 jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</code></pre>
 </div>
@@ -151,7 +151,7 @@ jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
+<pre class="highlight"><code class="language-scala" data-lang="scala">case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
 
 case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  )case class C (    a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )case class JsonExample2 (    a : A,    b : B,    c : C  )</code></pre>
 </div>
@@ -161,7 +161,7 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -169,7 +169,7 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -247,8 +247,8 @@ case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, 
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506448538190"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506448538190"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506448707363"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506448707363"></script>
    
   
 </body>
