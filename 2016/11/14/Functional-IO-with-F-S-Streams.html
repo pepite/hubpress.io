@@ -12,7 +12,7 @@
     <!-- This is a comment -->
     <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
      
-    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455614469" />
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455956991" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
     <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
    
@@ -41,9 +41,10 @@
     "publisher": "Lunatech's engineer blog",
     "author": {
         "@type": "Person",
-        "name": "Antoinelunatech",
-        "image": "https://avatars3.githubusercontent.com/u/32063588?v=4",
-        "url": "https://pepite.github.io/hubpress.io/author/Antoinelunatech/"
+        "name": "Nicolas Leroux",
+        "image": "https://avatars2.githubusercontent.com/u/180989?v=4",
+        "url": "https://pepite.github.io/hubpress.io/author/pepite/",
+        "sameAs": "http://lunatech.com"
     },
     "headline": "Functional IO with FS2 Streams",
     "url": "https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html",
@@ -95,13 +96,13 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">def readFromFile(fileName: String) {
-val src: BufferedSource = io.Source.fromFile(fileName)
-val it: Iterator[String] = src.getLines
-val _ = while(it.hasNext) {
-val line = it.next()
-println(line)
-}
-src.close()
+	val src: BufferedSource = io.Source.fromFile(fileName)
+	val it: Iterator[String] = src.getLines
+	val _ = while(it.hasNext) {
+		val line = it.next()
+		println(line)
+	}
+	src.close()
 }</code></pre>
 </div>
 </div>
@@ -153,7 +154,7 @@ src.close()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">"co.fs2" %% "fs2-core" % "0.9.1",
+<pre class="highlight"><code>"co.fs2" %% "fs2-core" % "0.9.1",
 "co.fs2" %% "fs2-io" % "0.9.1",</code></pre>
 </div>
 </div>
@@ -171,12 +172,13 @@ src.close()
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">val lines: Stream[Task, String] =
-io.file.readAllAsync[Task](pathToFile, 4096)
-.through(text.utf8Decode)
- .through(text.lines)
-----
-val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</code></pre>
+	io.file.readAllAsync[Task](pathToFile, 4096)
+						.through(text.utf8Decode)
+ 						.through(text.lines)</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p><code>val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)</code> - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</p>
 </div>
 <div class="paragraph">
 <p><code>Stream[F[<em>], O]</code> is the FS2 implementation of what we denoted by <code>Process[F[</em>],O]</code>.</p>
@@ -216,24 +218,21 @@ val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task,
-B]) =&gt; Pull[Task, A, Nothing] = {  newHandle: Handle[Task, A]
-
-=&gt;    val nextPull: Pull[Task, A, Handle[Task, A]] =
-for {      (nextElement: A, newHandle: Handle[Task, A])
-&lt;- newHandle.await1
-
-updatedAcc = ...
-
-//update the accumulator and pass back the updated one      _ &lt;- someCheckingOfA match {
-case ... =&gt;          Pull.pure(())
-//nothing to pick up         case ... =&gt;          Pull.output1(something)
-//pick up something
-}
-} yield (nextHandle, updatedAcc)
-
-    nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt;      using()(nextHandle)    )
-    }`</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task, B]) =&gt; Pull[Task, A, Nothing] = {
+	newHandle: Handle[Task, A] =&gt;
+    	val nextPull: Pull[Task, A, Handle[Task, A]] =
+          for {
+              (nextElement: A, newHandle: Handle[Task, A]) &lt;- newHandle.await1   			  updatedAcc = ...
+              //update the accumulator and pass back the updated one
+              _ &lt;- someCheckingOfA match {
+                      case ... =&gt; Pull.pure(())
+                      //nothing to pick up
+                      case ... =&gt;  Pull.output1(something)
+                      //pick up something
+              }
+          } yield (nextHandle, updatedAcc)
+        nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt; using()(nextHandle))
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -241,9 +240,7 @@ case ... =&gt;          Pull.pure(())
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A])
-=&gt;                             using()(handle, emptyAccumulator)
-)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A]) =&gt; using()(handle, emptyAccumulator))</code></pre>
 </div>
 </div>
 <div class="sect1">
@@ -284,16 +281,16 @@ case ... =&gt;          Pull.pure(())
 
 
             <figure class="author-image">
-                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/pepite/" style="background-image: url(https://avatars2.githubusercontent.com/u/180989?v&#x3D;4)"><span class="hidden">Nicolas Leroux's Picture</span></a>
             </figure>
 
             <section class="author">
-                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+                <h4><a href="https://pepite.github.io/hubpress.io/author/pepite/">Nicolas Leroux</a></h4>
 
-                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/pepite/">more posts</a> by this author.</p>
                 <div class="author-meta">
-                    
-                    
+                    <span class="author-location icon-location">Rotterdam</span>
+                    <span class="author-link icon-link"><a href="http://lunatech.com">http://lunatech.com</a></span>
                 </div>
             </section>
 
@@ -348,8 +345,8 @@ case ... =&gt;          Pull.pure(())
         });
 
       </script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455614469"></script>
-    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455614469"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455956991"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455956991"></script>
    
   
 </body>

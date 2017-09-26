@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>https://pepite.github.io/hubpress.io</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 26 Sep 2017 19:53:34 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>https://pepite.github.io/hubpress.io</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 26 Sep 2017 19:59:16 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
 <p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Team Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
 </div>
 <div class="paragraph">
@@ -18,13 +18,13 @@
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">def readFromFile(fileName: String) {
-val src: BufferedSource = io.Source.fromFile(fileName)
-val it: Iterator[String] = src.getLines
-val _ = while(it.hasNext) {
-val line = it.next()
-println(line)
-}
-src.close()
+	val src: BufferedSource = io.Source.fromFile(fileName)
+	val it: Iterator[String] = src.getLines
+	val _ = while(it.hasNext) {
+		val line = it.next()
+		println(line)
+	}
+	src.close()
 }</code></pre>
 </div>
 </div>
@@ -76,7 +76,7 @@ src.close()
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">"co.fs2" %% "fs2-core" % "0.9.1",
+<pre class="highlight"><code>"co.fs2" %% "fs2-core" % "0.9.1",
 "co.fs2" %% "fs2-io" % "0.9.1",</code></pre>
 </div>
 </div>
@@ -94,12 +94,13 @@ src.close()
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">val lines: Stream[Task, String] =
-io.file.readAllAsync[Task](pathToFile, 4096)
-.through(text.utf8Decode)
- .through(text.lines)
-----
-val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</code></pre>
+	io.file.readAllAsync[Task](pathToFile, 4096)
+						.through(text.utf8Decode)
+ 						.through(text.lines)</code></pre>
 </div>
+</div>
+<div class="paragraph">
+<p><code>val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)</code> - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</p>
 </div>
 <div class="paragraph">
 <p><code>Stream[F[<em>], O]</code> is the FS2 implementation of what we denoted by <code>Process[F[</em>],O]</code>.</p>
@@ -139,24 +140,21 @@ val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task,
-B]) =&gt; Pull[Task, A, Nothing] = {  newHandle: Handle[Task, A]
-
-=&gt;    val nextPull: Pull[Task, A, Handle[Task, A]] =
-for {      (nextElement: A, newHandle: Handle[Task, A])
-&lt;- newHandle.await1
-
-updatedAcc = ...
-
-//update the accumulator and pass back the updated one      _ &lt;- someCheckingOfA match {
-case ... =&gt;          Pull.pure(())
-//nothing to pick up         case ... =&gt;          Pull.output1(something)
-//pick up something
-}
-} yield (nextHandle, updatedAcc)
-
-    nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt;      using()(nextHandle)    )
-    }`</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task, B]) =&gt; Pull[Task, A, Nothing] = {
+	newHandle: Handle[Task, A] =&gt;
+    	val nextPull: Pull[Task, A, Handle[Task, A]] =
+          for {
+              (nextElement: A, newHandle: Handle[Task, A]) &lt;- newHandle.await1   			  updatedAcc = ...
+              //update the accumulator and pass back the updated one
+              _ &lt;- someCheckingOfA match {
+                      case ... =&gt; Pull.pure(())
+                      //nothing to pick up
+                      case ... =&gt;  Pull.output1(something)
+                      //pick up something
+              }
+          } yield (nextHandle, updatedAcc)
+        nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt; using()(nextHandle))
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -164,9 +162,7 @@ case ... =&gt;          Pull.pure(())
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A])
-=&gt;                             using()(handle, emptyAccumulator)
-)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A]) =&gt; using()(handle, emptyAccumulator))</code></pre>
 </div>
 </div>
 <div class="sect1">
