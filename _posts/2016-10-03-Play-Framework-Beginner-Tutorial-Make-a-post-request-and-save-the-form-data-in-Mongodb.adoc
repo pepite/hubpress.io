@@ -2,7 +2,7 @@
 
 :published_at: 2016-10-03
 :hp-tags: play
-:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F773b4406-6efe-4dc7-99af-af7e745090ca_adobestock_59337621.jpeg
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F8f06bba2-3811-49f1-a033-b601509aa6bf_adobestock_52920415.jpeg
 
 == Before the tutorial
 
