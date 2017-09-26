@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Functional IO with FS2 Streams</title>
+    <meta name="description" content="" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- This is a comment -->
+    <link rel="shortcut icon" href="https://pepite.github.io/hubpress.io/favicon.ico">
+     
+    <link rel="stylesheet" type="text/css" href="//pepite.github.io/hubpress.io/themes/casper/assets/css/screen.css?v=1506455614469" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <!-- link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/atom-one-light.min.css"/ -->
+   
+    <link rel="canonical" href="https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html" />
+    <meta name="referrer" content="origin" />
+    
+    <meta property="og:site_name" content="Lunatech&#x27;s engineer blog" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Functional IO with FS2 Streams" />
+    <meta property="og:description" content="Functional IO with FS2 Streams One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&amp;#8217;s needed to do some side effects e.g. when we want to read" />
+    <meta property="og:url" content="https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html" />
+    <meta property="og:image" content="https://prismic-io.s3.amazonaws.com/lunatech%2F7ab7d7e6-1699-49e7-8160-0c81a64520d6_adobestock_80894400.jpeg" />
+    <meta property="article:published_time" content="2016-11-14T00:00:00.000Z" />
+    <meta property="article:tag" content="fp" />
+    
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Functional IO with FS2 Streams" />
+    <meta name="twitter:description" content="Functional IO with FS2 Streams One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&amp;#8217;s needed to do some side effects e.g. when we want to read" />
+    <meta name="twitter:url" content="https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html" />
+    <meta name="twitter:image:src" content="https://prismic-io.s3.amazonaws.com/lunatech%2F7ab7d7e6-1699-49e7-8160-0c81a64520d6_adobestock_80894400.jpeg" />
+    
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "Lunatech's engineer blog",
+    "author": {
+        "@type": "Person",
+        "name": "Antoinelunatech",
+        "image": "https://avatars3.githubusercontent.com/u/32063588?v=4",
+        "url": "https://pepite.github.io/hubpress.io/author/Antoinelunatech/"
+    },
+    "headline": "Functional IO with FS2 Streams",
+    "url": "https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html",
+    "datePublished": "2016-11-14T00:00:00.000Z",
+    "image": "https://prismic-io.s3.amazonaws.com/lunatech%2F7ab7d7e6-1699-49e7-8160-0c81a64520d6_adobestock_80894400.jpeg",
+    "keywords": "fp",
+    "description": "Functional IO with FS2 Streams One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&amp;#8217;s needed to do some side effects e.g. when we want to read"
+}
+    </script>
+
+    <meta name="generator" content="HubPress" />
+    <link rel="alternate" type="application/rss+xml" title="Lunatech&#x27;s engineer blog" href="https://pepite.github.io/hubpress.io/rss/" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css">
+    
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+</head>
+<body class="post-template tag-fp nav-closed">
+
+    
+
+    <div class="site-wrapper">
+
+        
+
+
+<header class="main-header post-head " style="background-image: url(https://prismic-io.s3.amazonaws.com/lunatech%2F7ab7d7e6-1699-49e7-8160-0c81a64520d6_adobestock_80894400.jpeg)">
+    <nav class="main-nav overlay clearfix">
+        <a class="blog-logo" href="https://pepite.github.io/hubpress.io"><img src="http://lunatech.com/assets/images/Lunatech_Logo_Line_RGB_Pos_A.png" alt="Lunatech&#x27;s engineer blog" /></a>
+    </nav>
+</header>
+
+<main class="content" role="main">
+    <article class="post tag-fp">
+
+        <header class="post-header">
+            <h1 class="post-title">Functional IO with FS2 Streams</h1>
+            <section class="post-meta">
+                <time class="post-date" datetime="2016-11-14">14 November 2016</time>  on <a href="https://pepite.github.io/hubpress.io/tag/fp/">fp</a>
+            </section>
+        </header>
+
+        <section class="post-content">
+            <div class="sect1">
+<h2 id="_functional_io_with_fs2_streams">Functional IO with FS2 Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&#8217;s needed to do some side effects e.g. when we want to read from file. One straight-forward way of doing it is to get a <code>BufferedSource</code>, and process it using an iterator as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def readFromFile(fileName: String) {
+val src: BufferedSource = io.Source.fromFile(fileName)
+val it: Iterator[String] = src.getLines
+val _ = while(it.hasNext) {
+val line = it.next()
+println(line)
+}
+src.close()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then it is not too difficult to recursively convert the iterator to a Scala Stream of lines, without processing the whole iterator, using lazy evaluation. So we would end up with a function with signature:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">   def read(pathToFile: Path): Stream[String]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are few problems that can arise from this function:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, if an exception occurs and we still haven&#8217;t reached the end of the resulting Stream, or if we forget to close the <code>BufferedSource</code>, then the file would stay open, which is called resource leaking. Therefore, the above function is not resource-safe.- Second and more tricky, when we call the function read for a 2nd time, it may return a different result as someone may have modified the file between the two calls. We are forced to have some intrinsic knowledge about the file, therefore, the function <code>read</code> breaks referential transparency.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this blog-post we are going to tackle those two problems and learn how to avoid imperative troublesome IO using a specialized Scala library - FS2 (previously known as Scalaz-Stream).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_idea_of_functional_streams">The Idea of Functional Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The idea for solving the problem of resource-safety is to define a wrapper data type - <code>Process[F[<em>],O]</code>, where the left generic type <code>F</code> would know how to close the resource (the file) when it&#8217;s needed. In that way we can guarantee resource-safety without having to do anything non-related to reading from file (such as handling an exception). We can think of <code>Process[F[</em>],O]</code> as a type that represents a <strong>Stream builder</strong>, possibly producing/using some side effect. For example when reading from file we would work with <code>Process[Task, String]</code>, where <code>Task</code> knows how to execute and handle an operation (by assigning it to a thread). But note that it doesn&#8217;t start the execution immediately. It only starts when we call some of its executor-methods. Another example is when writing to output stream, in which case we  would use <code>Process[Task, Unit]</code>. Hence, we can say <code>Process[F[_],O]</code> is like a function <code>F[O] &#8658; Stream[O]</code>, but more powerful, and we will see exactly how is it more powerful.</p>
+</div>
+<div class="paragraph">
+<p>The idea for solving the second problem is <strong>to separate the logic of computation from actual computation</strong>. Note that the logic of how reading from file is done doesn&#8217;t change through the course of our program&#8217;s lifecycle. Only the result of executing that logic changes (since it involves a side-effect). So we are going to say that the left type - <code>F[O]</code> in <code>Process</code> knows how to evaluate effects. In that way we can represent our logic of computation, and delegate the responsibilities of executing that logic (and handling possible exceptions of the execution) to <code>F</code>. Most often we would substitute the generic type <code>F</code>  with  <code>Task</code> (which in addition allows concurrent composition of streams).</p>
+</div>
+<div class="paragraph">
+<p>Right now it may seem too much is going on. But as with every other paradigm, once we get a hands-on experience, we are going to feel comfortable working with it. The important conceptual thing to remember is that the left type <code>F</code> is responsible for closing resources and assigning operations to threads. In what follows, we are going to see examples of functional streams using the library <strong>FS2</strong>, a library that implements the above ideas.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_use_fs2">How to Use FS2</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is how we use FS2 for reading a file&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>First we must add its dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">"co.fs2" %% "fs2-core" % "0.9.1",
+"co.fs2" %% "fs2-io" % "0.9.1",</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, similar to Scala&#8217;s <code>Future</code>, we must provide a strategy for execution:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">implicit val strategy = Strategy.fromFixedDaemonPool(4)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we define the pipeline of transformations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val lines: Stream[Task, String] =
+io.file.readAllAsync[Task](pathToFile, 4096)
+.through(text.utf8Decode)
+ .through(text.lines)
+----
+val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)` - we get a Stream[Task, Byte].through(text.utf8Decode)` - we get a Stream[Task, String], but newline is disregarded.through(text.lines)` - we get the final Stream[Task, String] representing lines.</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>Stream[F[<em>], O]</code> is the FS2 implementation of what we denoted by <code>Process[F[</em>],O]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that the above code doesn&#8217;t read anything. We postpone it as much as possible, usually until the end of the world (our <code>main</code> method). At that point we must do two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, we compile the pipeline of transformations, combining all the intermediate Tasks into a single Task. We do that by calling <code>lines.run</code>, which gives us a` Task[Unit]<code>.- Second, we execute the pipeline by calling `lines.run.unsafeRun()</code>, so we end up with a single result-value, in this case <code>Unit</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, <code>Stream[F[<em>], O]</code> is also a <code>Monad</code>, so we can do almost everything that we can do with a <code>Seq</code>. That is one argument why the FS2 is much more powerful than a builder-function <code>F[</em>] &#8658; O</code>.</p>
+</div>
+</div>
+</div>
+<h1 id="_pulling" class="sect0">Pulling</h1>
+<div class="paragraph">
+<p>Another very useful and powerful functionality that FS2 supports is pulling. Sometimes we don&#8217;t want to map over all the elements of an FS2Stream , but halt the process of mapping and end up with a smaller FS2Stream. We can implement that with the method <code>pull</code> defined on FS2Stream:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">.pull[Task, Path](using: (Handle[Task, Path]) =&gt; Pull[Task, Path, Nothing]))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we wrote FS2Stream, so to avoid mixing it with the standard Scala <code>Stream</code>.</p>
+</div>
+<div class="paragraph">
+<p>Now comes the tricky part - how to define the auxiliary function <code>using</code>. The simplest  way to explain that function is to say <code>Handle</code> knows how to retrieve the next element in a FS2Stream, and <code>Pull</code> knows how to pick up elements that we want to select and output as a side-effect of the pulling.</p>
+</div>
+<div class="paragraph">
+<p>For example, imagine we want to output elements produced in the process of iterating, but produce element only in some steps of the iteration. Then we can do the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task,
+B]) =&gt; Pull[Task, A, Nothing] = {  newHandle: Handle[Task, A]
+
+=&gt;    val nextPull: Pull[Task, A, Handle[Task, A]] =
+for {      (nextElement: A, newHandle: Handle[Task, A])
+&lt;- newHandle.await1
+
+updatedAcc = ...
+
+//update the accumulator and pass back the updated one      _ &lt;- someCheckingOfA match {
+case ... =&gt;          Pull.pure(())
+//nothing to pick up         case ... =&gt;          Pull.output1(something)
+//pick up something
+}
+} yield (nextHandle, updatedAcc)
+
+    nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt;      using()(nextHandle)    )
+    }`</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>, and we would apply <code>using()</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A])
+=&gt;                             using()(handle, emptyAccumulator)
+)</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>FS2</strong> is a masterpiece library that allows us to work with side effects in a resource-safe, consistent, and memory-efficient way. It does all that in a fully functional and composable way, and on top of all that, it supports concurrency. In another blog-post I am going to explain how we can do concurrent computations with FS2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_useful_links">Useful Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.youtube.com/watch?v=cahvyadYfX8&amp;list=PLFrwDVdSrYE6PVD_p6YQLAbNaEHagx9bW&amp;index=1Intro">to Functional Streams for Scala</a></p>
+</li>
+<li>
+<p><a href="http://www.slideshare.net/InfoQ/compositional-io-stream-in-scalaCompositional">I/O Stream in Scala</a></p>
+</li>
+<li>
+<p><a href="https://github.com/functional-streams-for-scala/fs2Github">official repository for FS2</a></p>
+</li>
+<li>
+<p><a href="https://gist.github.com/djspiewak/d93a9c4983f63721c41cTutorial">for scalaz-stream</a></p>
+</li>
+<li>
+<p><a href="https://github.com/eamelink/fs2-keystores-poc/blob/master/src/main/scala/MyApp.scala">Example of FS2 pulling</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+        </section>
+
+        <footer class="post-footer">
+
+
+            <figure class="author-image">
+                <a class="img" href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/" style="background-image: url(https://avatars3.githubusercontent.com/u/32063588?v&#x3D;4)"><span class="hidden">Antoinelunatech's Picture</span></a>
+            </figure>
+
+            <section class="author">
+                <h4><a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">Antoinelunatech</a></h4>
+
+                    <p>Read <a href="https://pepite.github.io/hubpress.io/author/Antoinelunatech/">more posts</a> by this author.</p>
+                <div class="author-meta">
+                    
+                    
+                </div>
+            </section>
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Functional%20IO%20with%20FS2%20Streams&amp;url=https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://pepite.github.io/hubpress.io/2016/11/14/Functional-IO-with-F-S-Streams.html"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+        </footer>
+
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+</aside>
+
+
+
+        <footer class="site-footer clearfix">
+            <section class="copyright"><a href="https://pepite.github.io/hubpress.io">Lunatech&#x27;s engineer blog</a> &copy; 2017</section>
+            <section class="poweredby">Proudly published with <a href="http://hubpress.io">HubPress</a></section>
+        </footer>
+
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js?v="></script>
+   
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js?v="></script>
+    <script type="text/javascript">
+        jQuery( document ).ready(function() {
+          // change date with ago
+          jQuery('ago.ago').each(function(){
+            var element = jQuery(this).parent();
+            element.html( moment(element.text()).fromNow());
+           
+          });
+        });
+
+      </script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/jquery.fitvids.js?v=1506455614469"></script>
+    <script type="text/javascript" src="//pepite.github.io/hubpress.io/themes/casper/assets/js/index.js?v=1506455614469"></script>
+   
+  
+</body>
+</html>
