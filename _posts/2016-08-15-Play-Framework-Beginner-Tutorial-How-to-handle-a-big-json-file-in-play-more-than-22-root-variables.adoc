@@ -3,8 +3,11 @@
 :published_at: 2016-08-15
 :hp-tags: play
 
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech/8d5f37c9c903077b37968bbfbf66390924ad8d97_2016-12-19-photo-00000388.jpg
+
 It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this
 
+[source, json]
 ```
 {  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}
 ```
@@ -13,11 +16,14 @@ It is not a good practice to have such a big json with many root variables. Neve
 
 Since scala 2.11 we can have case class with more than 22 fields, so the following compiles.
 
+[source, scala]
 ```
 case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)
 ```
 
 But if we try to use Play https://www.playframework.com/documentation/2.5.x/ScalaJsonAutomated[JSON automated mapping]
+
+[source, scala]
 ```
 import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]
 ```
@@ -27,6 +33,8 @@ we get a compiler error
 ```
 
 Instead we can use https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play-Json extensions](requires play-json >= 2.4) 
+
+[source, scala]
 ```
 import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
 
@@ -40,39 +48,18 @@ I don’t consider having a case class with so many fields a good solution.
 
 A better solution is to organize these fields in “logical” embedded case classes.
 ```
-case class A ( 
-a1:String, a2:String, a3:String, a4:String,  
-a5:String, a6:String, a7:String, a8:String
-)
+case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
 
-case class B ( 
-a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  
-)
-case class C ( 
-a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )
-case class JsonExample2 (   
-a : A, 
-b : B,  
-c : C  
-)
+case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  )case class C (    a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )case class JsonExample2 (    a : A,    b : B,    c : C  )
 
 ```
 We use a “regular” play json format for the embedded case classes.
 ```
-import play.api.libs.json._
-implicit val jsonAFormat : Format[A] = Json.format[A]
-implicit val jsonBFormat : Format[B]= Json.format[B]
-implicit val jsonCFormat : Format[C] = Json.format[C]
+import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]
 ```
 And the “trick” now is to use the JsPath https://www.playframework.com/documentation/2.5.x/ScalaJsonCombinators[Play Json Combinator] for the embedded case classes without any path.
 ```
-import play.api.libs.functional.syntax._
-implicit val jsonExample2Format: Format[JsonExample2]  = ( 
-(JsPath).format[A] and  
-(JsPath).format[B] and 
-(JsPath).format[C])
-(JsonExample2.apply, unlift(JsonExample2.unapply)
-)
+import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))
 ```
 That’s all folks!
 
