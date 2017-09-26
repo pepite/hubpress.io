@@ -888,15 +888,16 @@ body.nav-opened .nav {
 .no-cover.main-header {
     min-height: 160px;
     max-height: 40vh;
-    background: #f5f8fa;
+    /*background: #f5f8fa;*/
+    background: url(https://prismic-io.s3.amazonaws.com/lunatech/e835cca…_photodune-6952986-system-l.jpg);
 }
 
 .no-cover .page-title {
-    color: rgba(0,0,0,0.8);
+    color: rgba(255,0,0,0.8);
 }
 
 .no-cover .page-description {
-    color: rgba(0,0,0,0.5);
+    color: #9c4c4c /*rgba(0,0,0,0.5);*/
 }
 
 /* Add subtle load-in animation for content on the home page */
