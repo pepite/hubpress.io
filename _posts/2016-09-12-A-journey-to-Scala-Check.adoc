@@ -2,6 +2,7 @@
 
 :published_at: 2016-09-12
 :hp-tags: scala
+:hp-image: https://lunatech.prismic.io/documents~k=blog-post&b=working&c=published/V9Zg5CQAAE48qxfR*V9ZwnSQAAFJBq3cJ/
 
 From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one.
 
