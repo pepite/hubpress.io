@@ -1,4 +1,4 @@
-= An Introduction of Finagle by example
+= An Introduction to Finagle by example
 See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
 :hp-image: /covers/cover.png
 :published_at: 2016-11-28
@@ -71,7 +71,232 @@ Some times we want to add application-agnostic behaviour, we can use Filter to a
 [source,scala]
 ----
 abstract class Filter[-ReqIn, +RepOut, +ReqOut, -RepIn] 
+extends ((ReqIn, Service[ReqOut, RepIn]) 
+=> Future[RepOut])
 ----
+
+image
+
+If it is not clear please check image below.
+
+image
+
+In most common cases, ReqIn is equal to ReqOut, and RepIn is equal to RepOut. So we have this SimpleFilter class
+
+[source,scala]
+----
+abstract class SimpleFilter[Req, Rep] extends Filter[Req, Rep, Req, Rep]
+----
+A filter can attached to client and server side. Let's try to implement a simple timeout filter.
+[source,scala]
+----
+import com.twitter.finagle.{SimpleFilter, Service}import com.twitter.util.{Duration, Timer, Future}
+
+class TimeoutFilter[Req, Rep](timeout: Duration, timer: Timer)
+extends SimpleFilter[Req, Rep] {
+
+  def apply(request: Req, service: Service[Req, Rep]): Future[Rep] = { 
+  val res = service(request) 
+  res.within(timer, timeout)  }
+  }
+----
+Here, a timeout filter is a class extends SimpleFilter trait. Below is how to use this filter on client side
+[source,scala]
+----
+client = Http.newService("localhost:9090")
+
+val timeoutFilter = new TimeoutFilter[http.Request, http.Response](Duration.fromSeconds(1),
+new JavaTimer(false))
+
+val clientWithTimeoutFilter = timeoutFilter.andThen(quickLookClient)
+----
+
+A filter can be applied on server side too. Here is an example. First let's define a filter.
+
+[source,scala]
+----
+class CountFilter[Req, Rep](countClient: Service[http.Request, http.Response])
+extends SimpleFilter[Req, Rep]
+{  override def apply(request: Req, service: Service[Req, Rep]): Future[Rep] = 
+{    val countRequest = http.Request(http.Method.Post, "/?count=5")    countClient(countRequest)    service(request)  }}
+----
+And then let's use it on our plusTen service
+[source,scala]
+----
+al service: Service[http.Request, http.Response] = new PlusTenService
+
+val countClient = Http.newService("localhost:9010")
+
+val countFilter = new CountFilter[http.Request, http.Response](countClient)
+
+val serviceWithCountFilter = countFilter.andThen(service)
+----
+You may notice the way to chain filter and service together is by using andThen method. Actually andThen method can not only chain filter with service but also chain multiple filters, like filter1 andThen filter2 andThen myservice 
+
+## Client
+This is the part that I like the most in finagle. Finagle http client is designed to maximize success and minimize latency. Each request will flow through various modules. These modules are logically separated into three stacks: Client stack, Endpoint stack, connection stack.
+
+*Client stack*
+
+manages name resolution and balances requests across multiple endpoints.
+
+*Endpoint stack*
+
+provides circuit breakers and connection pooling.
+
+*connection stack*
+
+provides connection life-cycle management and implements the wire protocol.
+
+To use finagle http client is very simple. Define a client first and define a http request, then apply request on the client.
+[source,scala]
+----
+// create a http clientval client = 
+Http.client.newService("example.com:80")
+// create a http requestval req =
+Request("/foo", ("my-query-string", "bar")
+)
+// apply request on the clientval resp: Future[Response] = client(req)Note: client(req) is equal to client.apply(req) 
+----
+What I want to emphasis here is the Load Balancer module. This module brings a lot of benefit for your application. It can simplify your application infstracture. Let's compare it with traditional solution.
+
+image
+
+As you can see, the traditional solution highly rely on nginx as load balancer, once nginx dead your service is not reachable, in real production environment, you have master-slave nginx wiht keeplived installed on nginx machine for heartbeat detection. This looks really complex, what about if we can get rid of these nginx?Let's have look at following code.
+[source,scala]
+----
+name: Name =
+Name.bound(Address("localhost", 10010), Address("localhost", 10011), Address("localhost", 10012)
+)
+//define a clientval client: Service[http.Request, http.Response] = Http.newService(name, "client")
+----
+This means you supply three addresses and put it into finagle http client. Finagle client will dispatch the request to one of address based on certain load balance algorithmn. The default algorithmn is "Exponentially Weighted Moving Average (EWMA)". Now your infstracture architechture becomes like following
+
+image
+
+Pretty simple right. Your apis talk to each other directly.
+
+## Protocol-agnostic
+
+Finagle is a protocol-agnostic RPC system. It means Finagle supports every protocol if people implement it. For example: finagle-thrift is using thrift protocol. finagle-mysql implements the mysql protocol.Now, let's look at this scenario 
+
+image
+
+We want to make a api count service to count how many times the web service has been called. In section Service and Filter. We send http request and put number as query parameter. It just feel strange that I just want to send a number to count server, to achieve that I have to send a http request. Because I don't use any data from header, cookie and body. If the application is running on AWS, it those junk information cost money. So it's ideal to just send a integer number to api count service. Let's implement this by customize finagle protocol.First, we should tell finagle how to converts an scodec codec into a Netty encoder
+
+[source,scala]
+----
+import org.jboss.netty.buffer.{ChannelBuffer, ChannelBuffers}import org.jboss.netty.channel.{Channel, ChannelHandlerContext}import org.jboss.netty.handler.codec.oneone.{OneToOneDecoder, OneToOneEncoder}import scodec.Codecimport scodec.bits.BitVector
+
+trait CodecConversions {  /**    * Converts an scodec codec into a Netty encoder.    */  protected def encoder[A: Codec] =
+new OneToOneEncoder {
+override def encode(ctx: ChannelHandlerContext, channel: Channel, msg: Object) = 
+
+ChannelBuffers.wrappedBuffer(        Codec.encodeValid(msg.asInstanceOf[A]).toByteBuffer      ) 
+}
+
+  /**    * Converts an scodec codec into a Netty decoder. 
+  */  protected def decoder[A: Codec] = new OneToOneDecoder { 
+  override def decode(ctx: ChannelHandlerContext, channel: Channel, msg: Object) =   
+  msg match {     
+  case cb: ChannelBuffer =>          Codec.decodeValidValue[A](BitVector(cb.toByteBuffer)).asInstanceOf[Object]        case other => other      } 
+  }
+  } 
+----
+And then channel pipeline and codec factories
+[source,scala]
+----
+trait Factories { this: CodecConversions =>  import com.twitter.finagle.{Codec => FinagleCodec, CodecFactory}  import org.jboss.netty.channel.{ChannelPipelineFactory, Channels}
+
+  /**   * Creates a Netty channel pipeline factory given input and output types.   */  private[this] def pipeline[I: Codec, O: Codec] = new ChannelPipelineFactory {    def getPipeline = {      val pipeline = Channels.pipeline()      pipeline.addLast("encoder", encoder[I])      pipeline.addLast("decoder", decoder[O]) 
+  pipeline    } 
+  }
+  /**   * Creates a Finagle codec factory given input and output types.   */  protected def codecFactory[I: Codec, O: Codec] = new CodecFactory[I, O] {  
+  def server = Function.const { 
+  new FinagleCodec[I, O] { def pipelineFactory = pipeline[O, I] } 
+  }
+    def client = Function.const {    
+    new FinagleCodec[I, O] { def pipelineFactory = pipeline[I, O] } 
+    } 
+    }
+    }
+----
+
+
+And then the code that actually creates our Finagle server and client
+
+[source,scala]
+----
+import java.net.InetSocketAddress
+
+import com.twitter.conversions.time._import com.twitter.finagle.Serviceimport com.twitter.finagle.builder.{ClientBuilder, ServerBuilder}import com.twitter.util.{Duration, Future}import scodec.Codec
+
+object IntegerServerAndClient extends Factories with CodecConversions {
+
+  /**    * Creates a Finagle server from a service that we have scodec codecs    * for both the input and output types.    */  def server[I, O](port: Int)(service: Service[I, O])(implicit ic: Codec[I], oc: Codec[O]) =    ServerBuilder()   
+  .name("server")   
+  .codec(codecFactory[I, O])    
+  .bindTo(new InetSocketAddress(port))      .build(service)
+  
+  /**    * Creates a Finagle client given input and output types with scodec codecs.    */  def client[I, O](host: String, timeout: Duration = 3.second)                  (implicit ic: Codec[I], oc: Codec[O]) =    ClientBuilder()   
+  .name("client")   
+  .codec(codecFactory[I, O])  
+  .hosts(host)   
+  .timeout(timeout)   
+  .build()
+  }
+----
+
+Define our simple service
+
+
+[scala,source]
+----
+  import com.twitter.finagle.Serviceimport com.twitter.util.Future
+
+class IntegerService extends Service[Int, Int]{  var count = 0  override def apply(request: Int): Future[Int] = {    Future.value(count + request)  }
+}
+----
+Run a server
+[source,scala]
+----
+import com.twitter.finagle.Serviceimport com.twitter.util.Awaitimport scodec.codecs.implicits.{ implicitIntCodec => _, _ }
+
+object Server {  def main(args: Array[String]): Unit = {    implicit val intgerCodec = 
+scodec.codecs.uint8
+
+    val service: Service[Int, Int] =
+    new IntegerService  
+    val server = IntegerServerAndClient.server[Int, Int](9191)(service)    Await.ready(server) 
+    }
+    }
+----
+Run a client
+[source,scala]
+----
+import com.twitter.finagle.Serviceimport com.twitter.util.Awaitimport scodec.codecs.implicits.{ implicitIntCodec => _, _ }
+
+object Client {  def main(args: Array[String]): Unit = {
+
+    implicit val intgerCodec = scodec.codecs.uint8
+
+    //define a client   
+    val client: Service[Int, Int] = IntegerServerAndClient.client[Int, Int]("localhost:9191")    //define a request  
+    val request = 4   
+    //apply request on the client   
+    val response = client(request)  
+    //print response    response.foreach(rep => println(s"This is response $rep"))  
+    Await.result(response)  
+    }
+    }
+----
+## Conclusion
+Finagle is a very flexible asychronous, protocol-agnostic RPC framework. It can help you to build high performance micro service with any protocol. It is worth to take a look at Finch the web framework based on Finagle. You can find more detail introduction from https://blog.twitter.com/2011/finagle-a-protocol-agnostic-rpc-system[Twitter blog] and more detailed example from http://twitter.github.io/scala_school/searchbird.html[Twitter scala school].
+
+
+
+
+
 
 
 
