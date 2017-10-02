@@ -1,8 +1,6 @@
 = Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb
-
 :published_at: 2016-10-03
 :hp-tags: play
-:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2F8f06bba2-3811-49f1-a033-b601509aa6bf_adobestock_52920415.jpeg
 
 == Before the tutorial
 
@@ -11,7 +9,7 @@ You should : - read  - https://www.playframework.com/documentation/2.5.x/ScalaAc
 This example uses https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection[compile-time dependency injection]. You can use https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection[run-time DI] if you feel confident about it. - download and install https://www.mongodb.com/download-center?jmp=homepage#community[mongodb] (brew install mongo for mac or check the video) - download and install http://3t.io/mongochef/[mongochef]
 
 == Tutorial 
-https://www.youtube.com/watch?v=-iPKaW1RuTI[Play framework - Beginner's tutorial : Save an http post request to mongodb in 20 minutes].
+video::iPKaW1RuTI[youtube]
 
 Image 
 
