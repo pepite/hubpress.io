@@ -1,6 +1,7 @@
 = Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb
 :published_at: 2016-10-03
 :hp-tags: play
+:author: Harry Laoulakos
 
 == Before the tutorial
 
