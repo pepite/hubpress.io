@@ -9,7 +9,8 @@ You should : - read  - https://www.playframework.com/documentation/2.5.x/ScalaAc
 This example uses https://www.playframework.com/documentation/2.5.x/ScalaCompileTimeDependencyInjection[compile-time dependency injection]. You can use https://www.playframework.com/documentation/2.5.x/ScalaDependencyInjection[run-time DI] if you feel confident about it. - download and install https://www.mongodb.com/download-center?jmp=homepage#community[mongodb] (brew install mongo for mac or check the video) - download and install http://3t.io/mongochef/[mongochef]
 
 == Tutorial 
-video::iPKaW1RuTI[youtube]
+
+video::-iPKaW1RuTI[youtube]
 
 
 == After the tutorial
