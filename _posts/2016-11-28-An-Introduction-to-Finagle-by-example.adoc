@@ -149,6 +149,7 @@ provides circuit breakers and connection pooling.
 provides connection life-cycle management and implements the wire protocol.
 
 To use finagle http client is very simple. Define a client first and define a http request, then apply request on the client.
+
 [source,scala]
 ----
 // create a http clientval client = 
@@ -249,15 +250,17 @@ object IntegerServerAndClient extends Factories with CodecConversions {
 
 Define our simple service
 
-
 [scala,source]
 ----
+
   import com.twitter.finagle.Serviceimport com.twitter.util.Future
 
 class IntegerService extends Service[Int, Int]{  var count = 0  override def apply(request: Int): Future[Int] = {    Future.value(count + request)  }
 }
 ----
+
 Run a server
+
 [source,scala]
 ----
 import com.twitter.finagle.Serviceimport com.twitter.util.Awaitimport scodec.codecs.implicits.{ implicitIntCodec => _, _ }
