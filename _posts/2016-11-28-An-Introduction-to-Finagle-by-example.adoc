@@ -249,11 +249,9 @@ object IntegerServerAndClient extends Factories with CodecConversions {
 ----
 
 Define our simple service
-
 [scala,source]
 ----
-
-  import com.twitter.finagle.Serviceimport com.twitter.util.Future
+import com.twitter.finagle.Serviceimport com.twitter.util.Future
 
 class IntegerService extends Service[Int, Int]{  var count = 0  override def apply(request: Int): Future[Int] = {    Future.value(count + request)  }
 }
