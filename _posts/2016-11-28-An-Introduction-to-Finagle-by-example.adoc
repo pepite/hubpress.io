@@ -1,5 +1,5 @@
 = An Introduction to Finagle by example
-See https://hubpress.gitbooks.io/hubpress-knowledgebase/content/ for information about the parameters.
+:hp-author: Yue Li
 :hp-image: /covers/cover.png
 :published_at: 2016-11-28
 :hp-tags: Finagle
