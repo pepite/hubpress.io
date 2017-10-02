@@ -1,4 +1,5 @@
 = An Introduction to Finagle by example
+==============
 Yue Li<yue.li@lunatech.com>
 :hp-image: /covers/cover.png
 :published_at: 2016-11-28
