@@ -13,4 +13,4 @@ However, this double-edged sword can be problematic, once you turned into a "fun
 
 This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one. 
 
-Add Video
+video::196169354[vimeo]
