@@ -16,9 +16,9 @@
     "disqus": ""
   },
   "socialnetwork": {
-    "email": "",
-    "github": "",
-    "twitter": "",
+    "email": "info@lunatech.com",
+    "github": "https://github.com/lunatech-labs",
+    "twitter": "https://twitter.com/lunatechlabs",
     "facebook": "",
     "googleplus": "",
     "instagram": "",
@@ -32,7 +32,7 @@
   },
   "urls": {
     "site": "https://pepite.github.io/hubpress.io",
-    "hubpress": "https://pepite.github.io/hubpress.io",
+    "hubpress": "http://blog.lunatech.com/hubpress.io",
     "theme": "//pepite.github.io/hubpress.io/themes/casper",
     "images": "https://pepite.github.io/hubpress.io/images"
   },
