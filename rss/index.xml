@@ -1,199 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>https://pepite.github.io/hubpress.io</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>https://pepite.github.io/hubpress.io</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 03 Oct 2017 06:31:44 GMT</lastBuildDate><atom:link href="https://pepite.github.io/hubpress.io/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[Side effects and how to deal with them the cool way, Part 1: Pure functions and functors]]></title><description><![CDATA[<div class="sect1">
-<h2 id="_introduction">Introduction</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Functional programming has become very popular, and one of the concepts that have gained popularity with it is the concept of "side effects", but what are really side effects and why functional programming is so good at handling them?</p>
-</div>
-<div class="paragraph">
-<p>I would first argue that most of the power of functional programming comes from leveraging pure mathematical concepts into the world of software engineering; a lot of people start getting scared by the only mention of mathematics, but do not worry! Math is cool, and easier than you would think if given patience, just trust me for now. Math gives us a lot of power, power that we can use to create reliable, scalable, error free, and simply right software.</p>
-</div>
-<div class="paragraph">
-<p>Lets first talk of one of those powerful and simple concepts that can greatly be used in software engineering: pure functions.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_pure_functions">Pure Functions</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>function: In mathematics the definition of a function is a relation from a set of things A to a set of things B, and for each thing A there must be only one thing B related.</p>
-</div>
-<div class="paragraph">
-<p>And why is it useful? Because it is completely deterministic, if you have a function <code>Int&#8658;Int</code> you know that it will only accept integers, and that it will always give back an integer, and this actually communicates a lot, for example lets read this function:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">// Boolean =&gt; Booleandef
-f(x: Boolean): Boolean</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>How many implementations of this function can there possible be? Only two, either the identity function, or the negation function, because if you have a boolean, the only thing that we can do with it is either leave it like that or change it to the only other possible value.</p>
-</div>
-<div class="paragraph">
-<p>Another useful thing that comes with this determinism is function composition (which wont be explained here, but if you don&#8217;t know what it is, please! search it on the internet and be amazed :) ). It is guaranteed that the new function produced by the composition will work thanks to the determinism of its domain and codomain (what it receives and what it returns). And by composing functions is how we create programs.</p>
-</div>
-<div class="paragraph">
-<p>Now in functional programming a pure function is just a function which respects the definition of a formal mathematical function, and by doing this we gain all the advantages (properties by formal proofs); but alas! the real world doesn&#8217;t work like that, we are surrounded by indeterminism! Values could be null, exceptions are thrown, IO may fail! And a pure function simply cannot accept a null value, or return an exception, because if a pure function says it will return an Int, then an Int is what it will return! Otherwise it simply is not a function, and we lose all the promised properties and advantages. And this little demons my friends are called side effects, what ever that possibly breaks the function signature is a side effect (possibly = indeterminism) (function signature = domain and codomain).</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_handling_side_effects_v1_a_map_function">Handling Side Effects v1: A map function</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>So we could do all kind of mumblejumble inside our functions to try to handle specific side effects (like try-catch statements for handling errors), but that is not extensible or even nice to read, we want to capture the essence of a side effect, keep them in a context, and then somehow apply our pure functions to it, so that our code stays clean and easy.</p>
-</div>
-<div class="paragraph">
-<p>Lets start with the possible missing value side effect (a.k.a. null pointer exception), in this case we want to apply our pure functions ONLY when the value actually exists, since we are using scala lets abstract it into a trait and two specific sub types:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">trait Maybe[+A]
-case class Just[A](value: A) extends Maybe[A]
-case object NotThere extends Maybe[Nothing]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p><code>Just</code> is the type that represents and existent value, and <code>NotThere</code> the one for when it is missing, this, as you can see is a proper abstraction of the side effect.</p>
-</div>
-<div class="paragraph">
-<p>Now lets code a simple pure function for integers:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">// Int =&gt; Int
-def plusOne(x: Int): Int = x+1</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>As you can see our pure code is completely decoupled from the side effect code (this is what functional programmers like to brag all the time about, pushing the side effects from our pure code). But now in order to use our pure function with a Maybe integer we need to add some methods.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">trait Maybe[+A] {
-def value: A
-def isDefined: Boolean
-def map(f: A=&gt;B): Maybe[B] = {
-if(isDefined) Just(f(value)) else NotThere
-}
-}
-
-case class Just[A](value: A) extends Maybe[A] {
-def isDefined: Boolean = true
-}
-
-case object NotThere extends Maybe[Nothing] {
-def isDefined: Boolean = false
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>So the important function that we added here is <code>map(f: A&#8658; B): Maybe[B]</code>, as you can see is a higher order function because it takes an other function (our pure functions), and will only apply them to the value if and only if the value is defined. Now lets make a useful companion object:
-And using our <code>plusOne</code> pure function, what we can do is
-something like this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">val x: Int = 8
-val maybeX = Maybe(x).map(plusOne)
-&gt; maybeX: Maybe[Int] = Just(9)</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now what if <code>x</code> was actually a null value? well then <code>maybeX: Maybe[Int] = NotThere</code> and no horrible null pointer exception is thrown, also we can handle that or exit the <code>Maybe</code> wrapper like this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">val x: Int = 8
-val y = Maybe(x).map(plusOne) match {
-case Just(i) =&gt; i
-case NotThere =&gt; 0
-}
-&gt; maybeX: Int = 9</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Now lets realise that our true operation (the <code>plusOne</code> function) was kept nice and pure, and handling null values is now completely decoupled from all the countless functions that potentially could have ended with a terrible:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">if (x == null)
-...else ...</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Also do not worry about coding all of these, since Scala already comes with these implemented:
-Our Code   Scala</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">Maybe[A] = Option[A]
-Just(a)  = Some(a)
-NotThere = None</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_handling_side_effects_v2_functors">Handling Side Effects v2: Functors</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>There is yet another spicy concept from functional programming that we will talk about: Functors. And we actually just created one! The formal definition of a functor is actually a little bit misleading as how they are used in software engineering, so lets keep it informal for now (as much as it pains).</p>
-</div>
-<div class="paragraph">
-<p>If a normal function is a mapping from a thing A to a thing B, then analogously a functor is a mapping inside a higher kinded type F[A] to F[B]. In this case the F[_] is the "higher kinded type" because it requires another type to become a type itself, for example our Maybe[\_] type. The Maybe <code>map</code> function is what it makes it a functor, since we are in the end going from some Maybe[A] to another Maybe[B].</p>
-</div>
-<div class="paragraph">
-<p>We could even abstract and decouple the concept of a Functor like this:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">trait Functor[F[_]] {
-def map[A, B](fa: F[A])(f: A =&gt; B): F[B]
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>You can see this as a functional design pattern, using Functors to decouple side effects from our pure functions. Other functors implemented by the scala library are:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">List[_]
-Future[_]
-Try[_]
-Either[_, _]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And with functional libraries like <code>scalaz</code> or <code>cats</code> you will find many more that handle other type of side effects.</p>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_conclusion">Conclusion</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Side effects can become the real arch enemy of programmers, but with powerful functional design patterns we can control them and create type safe, reliable programs. We will see in the next post an even more powerful design patter that derives from the need of controlling side effect, the always famous Monad.</p>
-</div>
-</div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/10/17/Side-effects-and-how-to-deal-with-them-the-cool-way-Part-1-Pure-functions-and-functors.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/10/17/Side-effects-and-how-to-deal-with-them-the-cool-way-Part-1-Pure-functions-and-functors.html</guid><category><![CDATA[fp]]></category><pubDate>Mon, 17 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional Rotterdam-15]]></title><description><![CDATA[<div class="paragraph">
-<p>Functional Rotterdam is a meetup held monthly in our Lunatech office about Programming Languages, Scala, Computer programming, Haskell, Functional Programming and Clojure, organized by Vijay Kiran, Development Manager at Lunatech.  Thomas Meijers, Software Engineer at Lunatech, presented Free of Interpretation. The presentation was filmed by Celeste Franco (thanks!!).</p>
-</div>
-<div class="paragraph">
-<p>One of Scala&#8217;s main selling points is its interoperability with Java.</p>
-</div>
-<div class="paragraph">
-<p>However, this double-edged sword can be problematic, once you turned into a "functional programmer fundamentalist". This paradigms can make your program not only less beautiful but also harder to understand and reason about. How can we wrap Java libraries in a way that we can still enjoy all the benefits of pure functional programming?</p>
-</div>
-<div class="paragraph">
-<p>This talk introduces the concept of the Free Monad, a powerful technic to separate parts of your program into data, its interpretation and the execution. As shown in this talk, this separation will give many benefits for testing and reasoning. As a use case we will rebuild a small part of a library created by the speaker, which wraps the OrientDB Java library. At the end of this talk you will be able to apply the concept of the Free Monad to wrap any Java Library into a pure functional one.</p>
-</div>
-<div class="videoblock">
-<div class="content">
-<iframe src="https://player.vimeo.com/video/196169354" frameborder="0" allowfullscreen></iframe>
-</div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/12/09/Functional-Rotterdam-15.html</guid><category><![CDATA[scala]]></category><category><![CDATA[clojure]]></category><category><![CDATA[fp]]></category><pubDate>Fri, 09 Dec 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[An Introduction to Finagle by example]]></title><description><![CDATA[<div id="preamble">
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Lunatech's engineer blog]]></title><description><![CDATA[FP, Scala and Java]]></description><link>http://blog.lunatech.com</link><image><url>https://prismic-io.s3.amazonaws.com/lunatech/e835cca8cd12752589fe15810104c4e28a482ae4_photodune-6952986-system-l.jpg</url><title>Lunatech&apos;s engineer blog</title><link>http://blog.lunatech.com</link></image><generator>RSS for Node</generator><lastBuildDate>Tue, 03 Oct 2017 08:03:59 GMT</lastBuildDate><atom:link href="http://blog.lunatech.com/rss/" rel="self" type="application/rss+xml"/><ttl>60</ttl><item><title><![CDATA[An Introduction to Finagle by example]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>It is a challenging task to build a large-scale web application, there are fundamental characteristics to take into account: for example, efficiency, safety and robustness. Finagle is a asynchronous, Netty based JVM RPC system made by Twitter which makes it easy to build high available clients and servers in Java and Scala. And it can even simplify your application architecture. Here I want to show you how powerful Finagle is.</p>
@@ -219,17 +24,22 @@ Either[_, _]</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.Serviceimport com.twitter.util.Futureimport com.twitter.finagle.http
+<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.Serviceimport
+import com.twitter.util.Futureimport
+import com.twitter.finagle.http
 
-This is a plus 10 serviceclass PlusTenService extends Service[http.Request, http.Response] {
-
+// This is a plus 10 service
+class PlusTenService extends Service[http.Request, http.Response] {
 
   override def apply(request: http.Request): Future[http.Response] = {
-  Future {
-  val input = request.getIntParam("num")
-  val output = input + 10
-  val response = http.Response(request.version, http.Status.Ok)      response.setContentString(output.toString)
-  response    }  }
+  	Future {
+  		val input = request.getIntParam("num")
+  		val output = input + 10
+  		val response = http.Response(request.version, http.Status.Ok)
+        response.setContentString(output.toString)
+        response
+    }
+  }
 }</code></pre>
 </div>
 </div>
@@ -238,9 +48,15 @@ This is a plus 10 serviceclass PlusTenService extends Service[http.Request, http
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.{http, Service, Http}import com.twitter.util.Await
+<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.{http, Service, Http}
+import com.twitter.util.Await
 
-object QuickLookServer {  def main(args: Array[String]): Unit = {    val service: Service[http.Request, http.Response] = new PlusTenService    val server = Http.serve(":9090", service)    Await.ready(server)  }}</code></pre>
+object QuickLookServer {
+	def main(args: Array[String]): Unit = {
+    val service: Service[http.Request, http.Response] = new PlusTenService    	  val server = Http.serve(":9090", service)
+    Await.ready(server)
+    }
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -248,16 +64,22 @@ object QuickLookServer {  def main(args: Array[String]): Unit = {    val service
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.{Service, Http}import com.twitter.finagle.httpimport com.twitter.util.Await
+<pre class="highlight"><code class="language-scala" data-lang="scala">import com.twitter.finagle.{Service, Http}
+import com.twitter.finagle.http
+import com.twitter.util.Await
 
-object QuickLookClient {  def main(args: Array[String]): Unit = {    //define a client    val client: Service[http.Request, http.Response] = Http.newService("localhost:9090")
-//define a request
-val request = http.Request(http.Method.Get, "/?num=5")
-//apply request on the client
-val response = client(request)
-//print response
-response.foreach(rep =&gt; println(rep.getContentString()))
-Await.result(response)  }
+object QuickLookClient {
+	def main(args: Array[String]): Unit = {
+    	//define a client
+    	val client: Service[http.Request, http.Response] = Http.newService("localhost:9090")
+		//define a request
+		val request = http.Request(http.Method.Get, "/?num=5")
+		//apply request on the client
+		val response = client(request)
+		// print response
+		response.foreach(rep =&gt; println(rep.getContentString()))
+		Await.result(response)
+    }
 }</code></pre>
 </div>
 </div>
@@ -269,9 +91,8 @@ Await.result(response)  }
 <div class="sect1">
 <h2 id="_the_core_of_finagle">The core of Finagle</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Service</p>
-</div>
+<div class="sect2">
+<h3 id="_service">Service</h3>
 <div class="paragraph">
 <p>Now let&#8217;s first have a look at the core of finagle Service[-Req, +Rep] . You can find the definition in com.twitter.finagle.Service . In Finagle 6.38.0 the definition of Service is an abstract class, in previous version it was a trait</p>
 </div>
@@ -283,9 +104,9 @@ Await.result(response)  }
 <div class="paragraph">
 <p>A service is a function that takes request of type Req, and return a response of Future of Rep. This Services type are used to represent both clients and servers. To answer my previous question, the differences between service and client is that a Finagle client “imports” a Service from the network. However, a Finagle server “exports” a Service to the network.Note: the Future here is twitter future not scala future. There is no differences on conception.</p>
 </div>
-<div class="paragraph">
-<p>Filter</p>
 </div>
+<div class="sect2">
+<h3 id="_filter">Filter</h3>
 <div class="paragraph">
 <p>Some times we want to add application-agnostic behaviour, we can use Filter to achieve this.</p>
 </div>
@@ -296,8 +117,10 @@ extends ((ReqIn, Service[ReqOut, RepIn])
 =&gt; Future[RepOut])</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>image</p>
+<div class="imageblock">
+<div class="content">
+<img src="https://prismic-io.s3.amazonaws.com/lunatech/4694105fa7ee7fd867da04057d2fae977d89cdbc_yue1.png" alt="4694105fa7ee7fd867da04057d2fae977d89cdbc yue1.png">
+</div>
 </div>
 <div class="paragraph">
 <p>If it is not clear please check image below.</p>
@@ -369,6 +192,7 @@ val serviceWithCountFilter = countFilter.andThen(service)</code></pre>
 </div>
 <div class="paragraph">
 <p>You may notice the way to chain filter and service together is by using andThen method. Actually andThen method can not only chain filter with service but also chain multiple filters, like filter1 andThen filter2 andThen myservice</p>
+</div>
 </div>
 </div>
 </div>
@@ -574,7 +398,7 @@ object Client {  def main(args: Array[String]): Unit = {
 <p>Finagle is a very flexible asychronous, protocol-agnostic RPC framework. It can help you to build high performance micro service with any protocol. It is worth to take a look at Finch the web framework based on Finagle. You can find more detail introduction from <a href="https://blog.twitter.com/2011/finagle-a-protocol-agnostic-rpc-system">Twitter blog</a> and more detailed example from <a href="http://twitter.github.io/scala_school/searchbird.html">Twitter scala school</a>.</p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/11/28/An-Introduction-to-Finagle-by-example.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/11/28/An-Introduction-to-Finagle-by-example.html</guid><category><![CDATA[Finagle]]></category><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional IO with FS2 Streams]]></title><description><![CDATA[<div class="sect1">
+</div>]]></description><link>http://blog.lunatech.com/2016/11/28/An-Introduction-to-Finagle-by-example.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/11/28/An-Introduction-to-Finagle-by-example.html</guid><category><![CDATA[Finagle]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 28 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional IO with FS2 Streams]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_functional_io_with_fs2_streams">Functional IO with FS2 Streams</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -765,7 +589,194 @@ case ... =&gt;          Pull.pure(())
 </ul>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/11/14/My-English-Title.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/11/14/My-English-Title.html</guid><category><![CDATA[fp]]></category><pubDate>Mon, 14 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/11/14/My-English-Title.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/11/14/My-English-Title.html</guid><category><![CDATA[fp]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 14 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional IO with FS2 Streams]]></title><description><![CDATA[<div class="sect1">
+<h2 id="_functional_io_with_fs2_streams">Functional IO with FS2 Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the main principles of functional programming is to avoid side-effects. For the most part, working with immutable instances would be sufficient to satisfy that principle. But sometimes it&#8217;s needed to do some side effects e.g. when we want to read from file. One straight-forward way of doing it is to get a <code>BufferedSource</code>, and process it using an iterator as shown below.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def readFromFile(fileName: String) {
+	val src: BufferedSource = io.Source.fromFile(fileName)
+	val it: Iterator[String] = src.getLines
+	val _ = while(it.hasNext) {
+		val line = it.next()
+		println(line)
+	}
+	src.close()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then it is not too difficult to recursively convert the iterator to a Scala Stream of lines, without processing the whole iterator, using lazy evaluation. So we would end up with a function with signature:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">   def read(pathToFile: Path): Stream[String]</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are few problems that can arise from this function:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, if an exception occurs and we still haven&#8217;t reached the end of the resulting Stream, or if we forget to close the <code>BufferedSource</code>, then the file would stay open, which is called resource leaking. Therefore, the above function is not resource-safe.- Second and more tricky, when we call the function read for a 2nd time, it may return a different result as someone may have modified the file between the two calls. We are forced to have some intrinsic knowledge about the file, therefore, the function <code>read</code> breaks referential transparency.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In this blog-post we are going to tackle those two problems and learn how to avoid imperative troublesome IO using a specialized Scala library - FS2 (previously known as Scalaz-Stream).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_idea_of_functional_streams">The Idea of Functional Streams</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The idea for solving the problem of resource-safety is to define a wrapper data type - <code>Process[F[<em>],O]</code>, where the left generic type <code>F</code> would know how to close the resource (the file) when it&#8217;s needed. In that way we can guarantee resource-safety without having to do anything non-related to reading from file (such as handling an exception). We can think of <code>Process[F[</em>],O]</code> as a type that represents a <strong>Stream builder</strong>, possibly producing/using some side effect. For example when reading from file we would work with <code>Process[Task, String]</code>, where <code>Task</code> knows how to execute and handle an operation (by assigning it to a thread). But note that it doesn&#8217;t start the execution immediately. It only starts when we call some of its executor-methods. Another example is when writing to output stream, in which case we  would use <code>Process[Task, Unit]</code>. Hence, we can say <code>Process[F[_],O]</code> is like a function <code>F[O] &#8658; Stream[O]</code>, but more powerful, and we will see exactly how is it more powerful.</p>
+</div>
+<div class="paragraph">
+<p>The idea for solving the second problem is <strong>to separate the logic of computation from actual computation</strong>. Note that the logic of how reading from file is done doesn&#8217;t change through the course of our program&#8217;s lifecycle. Only the result of executing that logic changes (since it involves a side-effect). So we are going to say that the left type - <code>F[O]</code> in <code>Process</code> knows how to evaluate effects. In that way we can represent our logic of computation, and delegate the responsibilities of executing that logic (and handling possible exceptions of the execution) to <code>F</code>. Most often we would substitute the generic type <code>F</code>  with  <code>Task</code> (which in addition allows concurrent composition of streams).</p>
+</div>
+<div class="paragraph">
+<p>Right now it may seem too much is going on. But as with every other paradigm, once we get a hands-on experience, we are going to feel comfortable working with it. The important conceptual thing to remember is that the left type <code>F</code> is responsible for closing resources and assigning operations to threads. In what follows, we are going to see examples of functional streams using the library <strong>FS2</strong>, a library that implements the above ideas.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_how_to_use_fs2">How to Use FS2</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is how we use FS2 for reading a file&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>First we must add its dependencies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>"co.fs2" %% "fs2-core" % "0.9.1",
+"co.fs2" %% "fs2-io" % "0.9.1",</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, similar to Scala&#8217;s <code>Future</code>, we must provide a strategy for execution:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">implicit val strategy = Strategy.fromFixedDaemonPool(4)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then we define the pipeline of transformations:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">val lines: Stream[Task, String] =
+	io.file.readAllAsync[Task](pathToFile, 4096)
+						.through(text.utf8Decode)
+ 						.through(text.lines)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>val lines: Stream[Task, String] =	io.file.readAllAsync[Task](pathToFile, 4096)</code> - we get a <code>Stream[Task, Byte].through(text.utf8Decode)</code> - we get a <code>Stream[Task, String], but newline is disregarded.through(text.lines)</code> - we get the final <code>Stream[Task, String]</code> representing lines.</p>
+</div>
+<div class="paragraph">
+<p><code>Stream[F[<em>], O]</code> is the FS2 implementation of what we denoted by <code>Process[F[</em>],O]</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that the above code doesn&#8217;t read anything. We postpone it as much as possible, usually until the end of the world (our <code>main</code> method). At that point we must do two things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>First, we compile the pipeline of transformations, combining all the intermediate Tasks into a single Task. We do that by calling <code>lines.run</code>, which gives us a <code>Task[Unit]</code>.- Second, we execute the pipeline by calling <code>lines.run.unsafeRun()</code>, so we end up with a single result-value, in this case <code>Unit</code>.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In addition, <code>Stream[F[<em>], O]</code> is also a <code>Monad</code>, so we can do almost everything that we can do with a <code>Seq</code>. That is one argument why the FS2 is much more powerful than a builder-function <code>F[</em>] &#8658; O</code>.</p>
+</div>
+</div>
+</div>
+<h1 id="_pulling" class="sect0">Pulling</h1>
+<div class="paragraph">
+<p>Another very useful and powerful functionality that FS2 supports is pulling. Sometimes we don&#8217;t want to map over all the elements of an FS2Stream , but halt the process of mapping and end up with a smaller FS2Stream. We can implement that with the method <code>pull</code> defined on FS2Stream:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">.pull[Task, Path](using: (Handle[Task, Path]) =&gt; Pull[Task, Path, Nothing]))</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we wrote FS2Stream, so to avoid mixing it with the standard Scala <code>Stream</code>.</p>
+</div>
+<div class="paragraph">
+<p>Now comes the tricky part - how to define the auxiliary function <code>using</code>. The simplest  way to explain that function is to say <code>Handle</code> knows how to retrieve the next element in a FS2Stream, and <code>Pull</code> knows how to pick up elements that we want to select and output as a side-effect of the pulling.</p>
+</div>
+<div class="paragraph">
+<p>For example, imagine we want to output elements produced in the process of iterating, but produce element only in some steps of the iteration. Then we can do the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">def using(): (Handle[Task, A], accumulator: FS2Stream[Task, B]) =&gt; Pull[Task, A, Nothing] = {
+	newHandle: Handle[Task, A] =&gt;
+    	val nextPull: Pull[Task, A, Handle[Task, A]] =
+          for {
+              (nextElement: A, newHandle: Handle[Task, A]) &lt;- newHandle.await1   			  updatedAcc = ...
+              //update the accumulator and pass back the updated one
+              _ &lt;- someCheckingOfA match {
+                      case ... =&gt; Pull.pure(())
+                      //nothing to pick up
+                      case ... =&gt;  Pull.output1(something)
+                      //pick up something
+              }
+          } yield (nextHandle, updatedAcc)
+        nextPull.flatMap((nextHandle: Handle[Task, A]) =&gt; using()(nextHandle))
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>, and we would apply <code>using()</code> as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-scala" data-lang="scala">someFS2Stream.pull[Task, A]((handle: Handle[Task, A]) =&gt; using()(handle, emptyAccumulator))</code></pre>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>FS2</strong> is a masterpiece library that allows us to work with side effects in a resource-safe, consistent, and memory-efficient way. It does all that in a fully functional and composable way, and on top of all that, it supports concurrency. In another blog-post I am going to explain how we can do concurrent computations with FS2.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_useful_links">Useful Links</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://www.youtube.com/watch?v=cahvyadYfX8&amp;list=PLFrwDVdSrYE6PVD_p6YQLAbNaEHagx9bW&amp;index=1Intro">to Functional Streams for Scala</a></p>
+</li>
+<li>
+<p><a href="http://www.slideshare.net/InfoQ/compositional-io-stream-in-scalaCompositional">I/O Stream in Scala</a></p>
+</li>
+<li>
+<p><a href="https://github.com/functional-streams-for-scala/fs2Github">official repository for FS2</a></p>
+</li>
+<li>
+<p><a href="https://gist.github.com/djspiewak/d93a9c4983f63721c41cTutorial">for scalaz-stream</a></p>
+</li>
+<li>
+<p><a href="https://github.com/eamelink/fs2-keystores-poc/blob/master/src/main/scala/MyApp.scala">Example of FS2 pulling</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>]]></description><link>http://blog.lunatech.com/2016/11/14/Functional-IO-with-F-S-Streams.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/11/14/Functional-IO-with-F-S-Streams.html</guid><category><![CDATA[fp]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Mon, 14 Nov 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Side Effects and How To Deal With Them The Cool Way, Part 2: Monads Introduction]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>In <a href="http://www.lunatech.com/blog/WASQJiQAANmjwKxf/side-effects-and-how-to-deal-with-them-the-cool-way-part-1-pure-fonctions-and-functors">part 1</a> of this series we learnt how to decouple the code that deals with side effects from our pure functions by using functors (Any type constructor which implements the map function). Now lets see how we can extend our functors so that we can sequence computations that each fall under the indeterminism of side effects.</p>
@@ -944,7 +955,7 @@ def flatMap[A, B](M: F[A])(f: A =&gt; F[B]): F[B]
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">m.flatMap(f).flatMap(g) === m.flatMap(\x =&gt; f(x).flatMap g)</code></pre>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</guid><category><![CDATA[monad]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Mon, 31 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb]]></title><description><![CDATA[<div class="sect1">
+</div>]]></description><link>http://blog.lunatech.com/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/10/31/Side-Effects-and-How-To-Deal-With-Them-The-Cool-Way-Part-2-Monads-Introduction.html</guid><category><![CDATA[monad]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Mon, 31 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : Make a post request and save the form data in Mongodb]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_before_the_tutorial">Before the tutorial</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1004,7 +1015,7 @@ check</p>
 </ul>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/10/03/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/10/03/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 03 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless : Computing deltas]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/10/03/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/10/03/Play-Framework-Beginner-Tutorial-Make-a-post-request-and-save-the-form-data-in-Mongodb.html</guid><category><![CDATA[play]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 03 Oct 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless : Computing deltas]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p><strong>A real life exemple</strong></p>
@@ -1038,14 +1049,13 @@ check</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>sealed trait Diff[A]
+<pre class="highlight"><code class="language-scala" data-lang="scala">sealed trait Diff[A]
 final case class Identical[A](value: A) extends Diff[A]
 final case class Different[A](left: A, right: A) extends Diff[A]
 object Diff {
-def apply[A](left: A, right: A): Diff[A] =
-  if (left == right) Identical(left)
-  else       Different(left, right)
-  }</pre>
+	def apply[A](left: A, right: A): Diff[A] =
+    	if (left == right) Identical(left) else Different(left, right)
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1058,34 +1068,34 @@ def apply[A](left: A, right: A): Diff[A] =
 <div class="content">
 <pre class="highlight"><code class="language-scala" data-lang="scala">trait SimpleDelta[R &lt;: HList] extends DepFn2[R, R] {
   type Out &lt;: HList //Result is bounded by HList
-  }
-  object SimpleDelta {
+}
+
+object SimpleDelta {
  /** type alias Aux adds as a type parameter the return Type.
-   * It is convenient in order to constrain it
-   * by passing it as a type parameter.
-   */
-type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I]{ type Out = O }
-//Recursive Algorithm
-implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
-type Out = HNil
-def apply(l: HNil, r: HNil): Out = HNil
-}
-implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList]
-(implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] =
-new SimpleDelta[H :: T]{
-type Out = Diff[H] :: DT
-def apply(l: H :: T, r: H :: T) : Out =
-Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
-}
-def apply[A, R &lt;: HList](l: A, r: A)
-(implicit genA: Generic.Aux[A, R],
-delta: SimpleDelta[R]): delta.Out =
-delta(genA.to(l), genA.to(r))
+  * It is convenient in order to constrain it
+  * by passing it as a type parameter.
+  */
+	type Aux[I &lt;: HList, O &lt;: HList] = SimpleDelta[I] {
+    	type Out = O
+	}
+
+	//Recursive Algorithm
+	implicit def hnilDelta: Aux[HNil, HNil] = new SimpleDelta[HNil] {
+		type Out = HNil
+		def apply(l: HNil, r: HNil): Out = HNil
+	}
+
+	implicit def hconsDelta[H, T &lt;: HList, DT &lt;: HList](implicit tailDelta: Aux[T, DT]) : Aux[H::T, Diff[H] :: DT] = new SimpleDelta[H :: T] {
+		type Out = Diff[H] :: DT
+		def apply(l: H :: T, r: H :: T) : Out = Diff(l.head, r.head) :: tailDelta(l.tail, r.tail)
+	}
+
+	def apply[A, R &lt;: HList](l: A, r: A)(implicit genA: Generic.Aux[A, R], delta: SimpleDelta[R]): delta.Out = delta(genA.to(l), genA.to(r))
 }</code></pre>
 </div>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/09/19/Shapeless-Computing-deltas.html</guid><category><![CDATA[shapeless]]></category><pubDate>Mon, 19 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[A journey to ScalaCheck]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/09/19/Shapeless-Computing-deltas.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/09/19/Shapeless-Computing-deltas.html</guid><category><![CDATA[shapeless]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 19 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[A journey to ScalaCheck]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>From the Spanish good weather to the Dutch every-possible-weather-in-one-day, from Waterfall to Agile, from just testing to property based testing. The path I took when joining Lunatech was an interesting one.</p>
@@ -1395,7 +1405,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 <p>I started with ScalaCheck soon after I started with Scala and it changed the way I look at tests. Be always open to explore and try new options, because from all of them you will always learn something useful.</p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/09/12/A-journey-to-Scala-Check.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/09/12/A-journey-to-Scala-Check.html</guid><category><![CDATA[scala]]></category><pubDate>Mon, 12 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless: Introduction resources]]></title><description><![CDATA[<div class="sect1">
+</div>]]></description><link>http://blog.lunatech.com/2016/09/12/A-journey-to-Scala-Check.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/09/12/A-journey-to-Scala-Check.html</guid><category><![CDATA[scala]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 12 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Shapeless: Introduction resources]]></title><description><![CDATA[<div class="sect1">
 <h2 id="_where_to_start_if_you_want_to_learn_shapeless">Where to start if you want to learn shapeless</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -1490,7 +1500,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </ul>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/09/05/Shapeless-Introduction-resources.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/09/05/Shapeless-Introduction-resources.html</guid><category><![CDATA[shapeless]]></category><pubDate>Mon, 05 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving from Spain to the Netherlands]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/09/05/Shapeless-Introduction-resources.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/09/05/Shapeless-Introduction-resources.html</guid><category><![CDATA[shapeless]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 05 Sep 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving from Spain to the Netherlands]]></title><description><![CDATA[<div class="paragraph">
 <p>Last week, I started talking about the main things I&#8217;ve faced when learning Scala, after being a Java developers for a few years. Today, I will talk about how it was to move from Spain to the Netherlands, in order to join Lunatech.</p>
 </div>
 <div class="paragraph">
@@ -1540,7 +1550,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="paragraph">
 <p>But you can become an expert biker too. And dutch people love to show how professional they are on this matter. You think you are strong because you can carry all your supermarket bags and still going fast enough? Look at this mother carrying their two children on the bike and passing you on the left. You think you are cool because you can handle the bike with one hand while scratching your head with the other one? I&#8217;ve seen many times people texting on their phones, with both hands, while turning the bike. I&#8217;ve so much to learn.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/25/Moving-from-Spain-to-the-Netherlands.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/25/Moving-from-Spain-to-the-Netherlands.html</guid><pubDate>Thu, 25 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving From Java To Scala]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/08/25/Moving-from-Spain-to-the-Netherlands.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/08/25/Moving-from-Spain-to-the-Netherlands.html</guid><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Thu, 25 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Moving From Java To Scala]]></title><description><![CDATA[<div class="paragraph">
 <p>Sometime ago I came from Madrid to Rotterdam to join Lunatech’s international workforce. Apart from introducing me to Dutch summers (rain), this also gave me an opportunity to learn a new programming language: Scala.</p>
 </div>
 <div class="paragraph">
@@ -1551,7 +1561,12 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">public Foo someMethod(Foo foo, Bar bar) {		Foo firstResult = foo.doSomething();		Bar secondResult = bar.doOtherThing();		Foo finalResult = doLastThing(firstResult, secondResult);		return finalResult;		}</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">public Foo someMethod(Foo foo, Bar bar) {
+  Foo firstResult = foo.doSomething();
+  Bar secondResult = bar.doOtherThing();
+  Foo finalResult = doLastThing(firstResult, secondResult);
+  return finalResult;
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1559,7 +1574,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">def someMethod(foo: Foo, bar : Bar) : Foo = 		doLastThing(foo.doSomething, bar.doOtherThing)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">def someMethod(foo: Foo, bar : Bar) : Foo = doLastThing(foo.doSomething, bar.doOtherThing)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1576,7 +1591,10 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-java" data-lang="java">for (int i = 0; i &lt; intList.size(); i++) {		if (intList.get(i) % 2 == 0)			intList.set(i, intList.get(i) + 1)	}</code></pre>
+<pre class="highlight"><code class="language-java" data-lang="java">for (int i = 0; i &lt; intList.size(); i++) {
+	if (intList.get(i) % 2 == 0)
+    	intList.set(i, intList.get(i) + 1)
+}</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1601,14 +1619,14 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="paragraph">
 <p>So I’m having fun learning Scala, and I will go with some more details next week about moving to the Netherlands.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/17/Moving-From-Java-To-Scala.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/17/Moving-From-Java-To-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ java]]></category><pubDate>Wed, 17 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/08/17/Moving-From-Java-To-Scala.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/08/17/Moving-From-Java-To-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[java]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Wed, 17 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Play Framework - Beginner Tutorial : How to handle a big json file in play ( more than 22 root variables)]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>It is not a good practice to have such a big json with many root variables. Nevertheless, we might need to call a rest api that will give a json like this</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
+<pre class="highlight"><code class="language-json" data-lang="json">{  "a1": ...,  "a2" : ...,  "a3" : ...,  "a4" : ...,  "a5" : ...,  "a6" : ...,  "a7" : ...,  "a8" : ...,  "a9" : ...,  "a10" : ...,  "a11" : ...,  "a12" : ...,  "a13" : ...,  "a14" : ...,  "a15" : ...,  "a16" : ...,  "a17" : ...,  "a18" : ...,  "a19" : ...,  "a20" : ...,  "a21": ...,  "a22" : ...,  "a23" : ...,  "a24" : ...,  ....}</code></pre>
 </div>
 </div>
 </div>
@@ -1621,7 +1639,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">case class JsonExample (    a1:String, a2:String, a3:String, a4:String, a5:String, a6:String,    a7:String, a8:String, a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String, a17:String, a18:String,    a19:String, a20:String, a21:String, a22:String, a23:String, a24:String)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1629,7 +1647,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.json._implicit val jsonExampleFormat = Json.format[JsonExample]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1645,7 +1663,7 @@ Failed: Total 1, Failed 1, Errors 0, Passed 0</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
+<pre class="highlight"><code class="language-scala" data-lang="scala">import ai.x.play.json.Jsonximplicit val jsonExampleFormat = Jsonx.formatCaseClass[JsonExample]
 
 jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</code></pre>
 </div>
@@ -1666,21 +1684,9 @@ jsonExampleFormat: play.api.libs.json.Format[JsonExample] = $anon$1@b7f7890</cod
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>case class A (
-a1:String, a2:String, a3:String, a4:String,
-a5:String, a6:String, a7:String, a8:String
-)
+<pre class="highlight"><code class="language-scala" data-lang="scala">case class A (    a1:String, a2:String, a3:String, a4:String,    a5:String, a6:String, a7:String, a8:String)
 
-case class B (
-a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String
-)
-case class C (
-a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )
-case class JsonExample2 (
-a : A,
-b : B,
-c : C
-)</code></pre>
+case class B (    a9:String, a10:String, a11:String, a12:String,    a13:String, a14:String, a15:String, a16:String  )case class C (    a17:String, a18:String, a19:String, a20:String,    a21:String, a22:String, a23:String, a24:String  )case class JsonExample2 (    a : A,    b : B,    c : C  )</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1688,10 +1694,7 @@ c : C
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.json._
-implicit val jsonAFormat : Format[A] = Json.format[A]
-implicit val jsonBFormat : Format[B]= Json.format[B]
-implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.json._implicit val jsonAFormat : Format[A] = Json.format[A]implicit val jsonBFormat : Format[B]= Json.format[B]implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1699,20 +1702,14 @@ implicit val jsonCFormat : Format[C] = Json.format[C]</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code>import play.api.libs.functional.syntax._
-implicit val jsonExample2Format: Format[JsonExample2]  = (
-(JsPath).format[A] and
-(JsPath).format[B] and
-(JsPath).format[C])
-(JsonExample2.apply, unlift(JsonExample2.unapply)
-)</code></pre>
+<pre class="highlight"><code class="language-scala" data-lang="scala">import play.api.libs.functional.syntax._implicit val jsonExample2Format: Format[JsonExample2]  = (  (JsPath).format[A] and  (JsPath).format[B] and  (JsPath).format[C])(JsonExample2.apply, unlift(JsonExample2.unapply))</code></pre>
 </div>
 </div>
 <div class="paragraph">
 <p>That’s all folks!</p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</guid><category><![CDATA[play]]></category><pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Delivery on GitLab with Play, Scala, SBT and Heroku]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/08/15/Play-Framework-Beginner-Tutorial-How-to-handle-a-big-json-file-in-play-more-than-22-root-variables.html</guid><category><![CDATA[play]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 15 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Delivery on GitLab with Play, Scala, SBT and Heroku]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Last week we talked about <a href="http://www.lunatech.com/blog/V5tpoCQAANsPL4jw/continuous-integration-on-gitlab-with-scala-and-sbt">Continuous Integration (CI) with Scala and SBT on GitLab</a>. This week we are going to take a step further and implement Continuous Delivery (CD) on GitLab with Play and Heroku.</p>
@@ -1786,7 +1783,7 @@ script:
 <p>The source code of a demo project implementing the pipeline described in this post can be found here: <a href="https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku" class="bare">https://gitlab.com/jasperdenkers/lunatech-demo-cd-play-scala-heroku</a>.</p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</guid><category><![CDATA[play ]]></category><category><![CDATA[scala]]></category><pubDate>Mon, 08 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/08/08/Continuous-Delivery-on-Git-Lab-with-Play-Scala-SBT-and-Heroku.html</guid><category><![CDATA[play]]></category><category><![CDATA[scala]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 08 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Continuous Integration on GitLab with Scala and SBT]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>With Continuous Integration (CI) we aim to be able to test the changes we make to our projects automatically and externally. An usual setup involves e.g. GitHub and Jenkins and requires quite some configuration.</p>
@@ -1915,7 +1912,7 @@ before_script:
 <p><a href="http://docs.gitlab.com/ce/ci/" class="bare">http://docs.gitlab.com/ce/ci/</a></p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/08/01/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/08/01/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</guid><category><![CDATA[gitlabs]]></category><category><![CDATA[ git]]></category><category><![CDATA[ CI]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Mon, 01 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Recursion and Trampolines in Scala]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2016/08/01/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/08/01/Continuous-Integration-on-Git-Lab-with-Scala-and-SBT.html</guid><category><![CDATA[gitlabs]]></category><category><![CDATA[git]]></category><category><![CDATA[CI]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Mon, 01 Aug 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Recursion and Trampolines in Scala]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>Recursion is beautiful. As an example, let&#8217;s consider this perfectly acceptable example of defining the functions <code>even</code> and <code>odd</code> in Scala, whose semantics you can guess:</p>
@@ -2205,7 +2202,7 @@ even(3000).result</code></pre>
 <p>The source code of the benchmarks (and all the code), is available on <a href="https://github.com/eamelink/scala-trampolines" class="bare">https://github.com/eamelink/scala-trampolines</a></p>
 </div>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/07/15/Recursion-and-Trampolines-in-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ recursion]]></category><category><![CDATA[ fp]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Fri, 15 Jul 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Clever Cloud’s CEO to speak at Lunatech]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/07/15/Recursion-and-Trampolines-in-Scala.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/07/15/Recursion-and-Trampolines-in-Scala.html</guid><category><![CDATA[scala]]></category><category><![CDATA[recursion]]></category><category><![CDATA[fp]]></category><dc:creator><![CDATA[Nicolas Leroux]]></dc:creator><pubDate>Fri, 15 Jul 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Clever Cloud’s CEO to speak at Lunatech]]></title><description><![CDATA[<div class="paragraph">
 <p>Friday 27 May 2016 Clever Cloud’s CEO, <strong>Quentin Adam</strong>, will be visiting Lunatech where he will give a presentation about using Clever Cloud with Scala.</p>
 </div>
 <div class="paragraph">
@@ -2216,16 +2213,16 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>We are opening up the presentation to everyone. Feel free to join us at 16:00.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/05/26/Clever-Clouds-CEO-to-speak-at-Lunatech.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/05/26/Clever-Clouds-CEO-to-speak-at-Lunatech.html</guid><category><![CDATA[company]]></category><pubDate>Thu, 26 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Scala training camp at Lunatech]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/05/26/Clever-Clouds-CEO-to-speak-at-Lunatech.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/05/26/Clever-Clouds-CEO-to-speak-at-Lunatech.html</guid><category><![CDATA[company]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Thu, 26 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Scala training camp at Lunatech]]></title><description><![CDATA[<div class="paragraph">
 <p>Every friday our teams work together to improve their skills on Scala and other technologies. They explore new grounds, new ideas and new techniques.  They share knowledge between teams. Join us if you want to make your passion your work.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/05/19/Scala-training-camp-at-Lunatech.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/05/19/Scala-training-camp-at-Lunatech.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ office]]></category><pubDate>Thu, 19 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[On the road again: Scala days Berlin 2016]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/05/19/Scala-training-camp-at-Lunatech.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/05/19/Scala-training-camp-at-Lunatech.html</guid><category><![CDATA[scala]]></category><category><![CDATA[office]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Thu, 19 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[On the road again: Scala days Berlin 2016]]></title><description><![CDATA[<div class="paragraph">
 <p>Lunatech is proud to present the real star of this event: the Lunatech carry-on suitcase. With its class and convenience, it will accompany all Lunatech employees to the 2016 Scala days in Berlin. All suitcases are personalised with their owner’s name to make it difficult to sell them to the highest bidder and to prevent people ending up with their colleague’s suitcase.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/05/16/On-the-road-again-Scala-days-Berlin-2016.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/05/16/On-the-road-again-Scala-days-Berlin-2016.html</guid><category><![CDATA[scaladays]]></category><pubDate>Mon, 16 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Platinum sponsor of Scala Days Berlin]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/05/16/On-the-road-again-Scala-days-Berlin-2016.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/05/16/On-the-road-again-Scala-days-Berlin-2016.html</guid><category><![CDATA[scaladays]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 16 May 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Platinum sponsor of Scala Days Berlin]]></title><description><![CDATA[<div class="paragraph">
 <p>Lunatech is proud to be a <a href="http://event.scaladays.org/scaladays-berlin-2016#05-Sponsors">platinum sponsor for Scala Days Berlin 2016</a>. This year Lunatech is taking the whole team to Scala Days Berlin.</p>
 </div>
 <div class="paragraph">
 <p>If you’re there and are looking for a job with the kind of company that sponsors and takes all its employees to Scala Days, have a chat with us, there’ll be a lot of us walking around. If you can’t wait, get in touch with us right now.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</guid><category><![CDATA[scaladays]]></category><pubDate>Thu, 14 Apr 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/04/14/Platinum-sponsor-of-Scala-Days-Berlin.html</guid><category><![CDATA[scaladays]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Thu, 14 Apr 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Fast Track to Scala Training by Lunatech]]></title><description><![CDATA[<div class="paragraph">
 <p>On Feb 4 and 5th <strong>Francisco Canedo</strong>, Senior Developer at Lunatech and a Typesafe certified trainer, will be teaching Typesafe’s Fast Track to Scala Course at our office.</p>
 </div>
 <div class="paragraph">
@@ -2236,12 +2233,12 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>If you are interested in joining the course, please contact us by sending a mail to <a href="mailto:training@lunatech.com">training@lunatech.com</a> or tweet us @LunatechLabs</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/18/Fast-Track-to-Scala-Training-by-Lunatech.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/18/Fast-Track-to-Scala-Training-by-Lunatech.html</guid><category><![CDATA[scala]]></category><pubDate>Mon, 18 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Our first award!]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/01/18/Fast-Track-to-Scala-Training-by-Lunatech.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/01/18/Fast-Track-to-Scala-Training-by-Lunatech.html</guid><category><![CDATA[scala]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 18 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Our first award!]]></title><description><![CDATA[<div class="paragraph">
 <p>Lunatech has been awarded by the “<em>The National Business Success Award Institute</em>” as branch winner 2015 in the category “ICT”.</p>
 </div>
 <div class="paragraph">
 <p>The jury cited the company&#8217;s service quality, technology excellence and innovation. Representatives of the award winner also make appearances on the RTL television show "<em>De Success Factor</em>" .</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/04/Our-first-award.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/04/Our-first-award.html</guid><category><![CDATA[company]]></category><pubDate>Mon, 04 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional Rotterdam - 5th Edition]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/01/04/Our-first-award.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/01/04/Our-first-award.html</guid><category><![CDATA[company]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 04 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Functional Rotterdam - 5th Edition]]></title><description><![CDATA[<div class="paragraph">
 <p>Every first Tuesday of the month, at Lunatech we are organize a meetup focussed on Functional Programming. Tomorrow is the 5th edition of the event. You can join the fun by going to our <a href="http://www.meetup.com/Functional-Rotterdam/">meetup page</a></p>
 </div>
 <div class="paragraph">
@@ -2249,7 +2246,7 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>Do join us by RSVPing on the <a href="http://www.meetup.com/Functional-Rotterdam/">meetup page</a></p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2016/01/04/Functional-Rotterdam-5th-Edition.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2016/01/04/Functional-Rotterdam-5th-Edition.html</guid><category><![CDATA[fp]]></category><pubDate>Mon, 04 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Lunatech management realises MBO]]></title><description><![CDATA[<div class="paragraph">
+</div>]]></description><link>http://blog.lunatech.com/2016/01/04/Functional-Rotterdam-5th-Edition.html</link><guid isPermaLink="true">http://blog.lunatech.com/2016/01/04/Functional-Rotterdam-5th-Edition.html</guid><category><![CDATA[fp]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Mon, 04 Jan 2016 00:00:00 GMT</pubDate></item><item><title><![CDATA[Lunatech management realises MBO]]></title><description><![CDATA[<div class="paragraph">
 <p><strong>Ray Kemp</strong> and <strong>Nicolas Leroux</strong>, jointly CEO, have successfully realized a management buy-out (“MBO”) of Lunatech Labs BV (“Lunatech”). Also, some staff members acquired a small stake in the company in this transaction. Lunatech is a Dutch IT service provider specialised in system integration, customised software implementation and web applications.</p>
 </div>
 <div class="paragraph">
@@ -2275,7 +2272,7 @@ even(3000).result</code></pre>
 </div>
 <div class="paragraph">
 <p>Main Mezzanine Capital is part of Main Capital Partners, an investment and financing company, as well as a corporate finance advisor, with a focus on growing and profitable companies in the TMT sector in the Netherlands. Main Mezzanine Capital is funded by its own shareholders, wealthy individuals, family offices and (former) entrepreneurs, who like to invest in companies with an interesting risk-return profile.</p>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2015/12/22/Lunatech-management-realises-MBO.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2015/12/22/Lunatech-management-realises-MBO.html</guid><category><![CDATA[company]]></category><pubDate>Tue, 22 Dec 2015 00:00:00 GMT</pubDate></item><item><title><![CDATA[Syntactically correct and type-safe JPA queries in Play 2.0]]></title><description><![CDATA[<div id="preamble">
+</div>]]></description><link>http://blog.lunatech.com/2015/12/22/Lunatech-management-realises-MBO.html</link><guid isPermaLink="true">http://blog.lunatech.com/2015/12/22/Lunatech-management-realises-MBO.html</guid><category><![CDATA[company]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Tue, 22 Dec 2015 00:00:00 GMT</pubDate></item><item><title><![CDATA[Syntactically correct and type-safe JPA queries in Play 2.0]]></title><description><![CDATA[<div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
 <p>For all three approaches we’ll use the same use case: find a <code>User</code> object by its ‘username’ property.</p>
@@ -2448,4 +2445,4 @@ public abstract class User_ {
 <div class="paragraph">
 <p>[Hibernate JPA 2 Metamodel Generator](<a href="http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single" class="bare">http://docs.jboss.org/hibernate/jpamodelgen/1.0/reference/en-US/html_single</a>)</p>
 </div>
-</div>]]></description><link>https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html</link><guid isPermaLink="true">https://pepite.github.io/hubpress.io/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html</guid><category><![CDATA[scala]]></category><category><![CDATA[ recursion]]></category><category><![CDATA[ fp]]></category><pubDate>Wed, 15 Jul 2015 00:00:00 GMT</pubDate></item></channel></rss>
+</div>]]></description><link>http://blog.lunatech.com/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html</link><guid isPermaLink="true">http://blog.lunatech.com/2015/07/15/Syntactically-correct-and-type-safe-JPA-queries-in-Play-20.html</guid><category><![CDATA[scala]]></category><category><![CDATA[recursion]]></category><category><![CDATA[fp]]></category><dc:creator><![CDATA[Antoine Laffez]]></dc:creator><pubDate>Wed, 15 Jul 2015 00:00:00 GMT</pubDate></item></channel></rss>
