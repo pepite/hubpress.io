@@ -1,7 +1,6 @@
 = An Introduction to Finagle by example
-==============
-Yue Li<yue.li@lunatech.com>
-:hp-image: /covers/cover.png
+
+:hp-image: https://prismic-io.s3.amazonaws.com/lunatech%2Fd464580c-7c70-4cc0-aff6-d9d78728c220_adobestock_95877688.jpeg
 :published_at: 2016-11-28
 :hp-tags: Finagle
 
