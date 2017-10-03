@@ -8,6 +8,7 @@ It is a challenging task to build a large-scale web application, there are funda
 
 == Quickstart
 Let's first have a quick look about how to create a Finagle micro web service and a Finagle http client to consume this api.Create a sbt project and import dependencies.
+
 [source,scala]
 ----
 libraryDependencies ++= Seq( 
@@ -15,59 +16,85 @@ libraryDependencies ++= Seq(
 "org.scalatest" %% "scalatest" % "2.2.4" % "test"
 )
 ----
+
 First, let's define a service. Here we define a service to receive a http request and get its url parameter as Integer then return a http response by plus 10.
+
 [source,scala]
 ----
-import com.twitter.finagle.Serviceimport com.twitter.util.Futureimport com.twitter.finagle.http
+import com.twitter.finagle.Serviceimport 
+import com.twitter.util.Futureimport 
+import com.twitter.finagle.http
 
-This is a plus 10 serviceclass PlusTenService extends Service[http.Request, http.Response] {
-
+// This is a plus 10 service
+class PlusTenService extends Service[http.Request, http.Response] {
 
   override def apply(request: http.Request): Future[http.Response] = { 
-  Future {   
-  val input = request.getIntParam("num")     
-  val output = input + 10     
-  val response = http.Response(request.version, http.Status.Ok)      response.setContentString(output.toString)  
-  response    }  }
+  	Future {   
+  		val input = request.getIntParam("num")     
+  		val output = input + 10     
+  		val response = http.Response(request.version, http.Status.Ok)   
+        response.setContentString(output.toString)  
+        response    
+    }  
+  }
 }
 ----
 Then initiate and start our server
+
 [source,scala]
 ----
-import com.twitter.finagle.{http, Service, Http}import com.twitter.util.Await
+import com.twitter.finagle.{http, Service, Http}
+import com.twitter.util.Await
 
-object QuickLookServer {  def main(args: Array[String]): Unit = {    val service: Service[http.Request, http.Response] = new PlusTenService    val server = Http.serve(":9090", service)    Await.ready(server)  }}
-----
-Last let's define a client to consume this server.
-[source,scala]
-----
-import com.twitter.finagle.{Service, Http}import com.twitter.finagle.httpimport com.twitter.util.Await
-
-object QuickLookClient {  def main(args: Array[String]): Unit = {    //define a client    val client: Service[http.Request, http.Response] = Http.newService("localhost:9090") 
-//define a request    
-val request = http.Request(http.Method.Get, "/?num=5")    
-//apply request on the client 
-val response = client(request)   
-//print response  
-response.foreach(rep => println(rep.getContentString()))
-Await.result(response)  }
+object QuickLookServer {  
+	def main(args: Array[String]): Unit = {    
+    val service: Service[http.Request, http.Response] = new PlusTenService    	  val server = Http.serve(":9090", service)   
+    Await.ready(server) 
+    }
 }
 ----
+
+Last let's define a client to consume this server.
+
+[source,scala]
+----
+import com.twitter.finagle.{Service, Http}
+import com.twitter.finagle.http
+import com.twitter.util.Await
+
+object QuickLookClient {  
+	def main(args: Array[String]): Unit = {    
+    	//define a client    
+    	val client: Service[http.Request, http.Response] = Http.newService("localhost:9090") 
+		//define a request    
+		val request = http.Request(http.Method.Get, "/?num=5")    
+		//apply request on the client 
+		val response = client(request)   
+		// print response  
+		response.foreach(rep => println(rep.getContentString()))
+		Await.result(response)  
+    }
+}
+----
+
 If you run the two application you will see the server running on localhost:9090 and client get response 15. Simple right? As you can see our service and client are both type of Service[http.Request, http.Response] . This data type really confuse me in the beginning. I will explan what's the differences between them. 
 
 == The core of Finagle
-Service
+
+=== Service
 
 Now let's first have a look at the core of finagle Service[-Req, +Rep] . You can find the definition in com.twitter.finagle.Service . In Finagle 6.38.0 the definition of Service is an abstract class, in previous version it was a trait
+
 [source,scala]
 ----
 abstract class Service[-Req, +Rep] extends (Req => Future[Rep])
 ----
 A service is a function that takes request of type Req, and return a response of Future of Rep. This Services type are used to represent both clients and servers. To answer my previous question, the differences between service and client is that a Finagle client “imports” a Service from the network. However, a Finagle server “exports” a Service to the network.Note: the Future here is twitter future not scala future. There is no differences on conception.
 
-Filter
+=== Filter
 
 Some times we want to add application-agnostic behaviour, we can use Filter to achieve this.
+
 [source,scala]
 ----
 abstract class Filter[-ReqIn, +RepOut, +ReqOut, -RepIn] 
@@ -75,7 +102,7 @@ extends ((ReqIn, Service[ReqOut, RepIn])
 => Future[RepOut])
 ----
 
-image
+image::https://prismic-io.s3.amazonaws.com/lunatech/4694105fa7ee7fd867da04057d2fae977d89cdbc_yue1.png[]
 
 If it is not clear please check image below.
 
