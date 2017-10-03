@@ -106,7 +106,7 @@ image::https://prismic-io.s3.amazonaws.com/lunatech/4694105fa7ee7fd867da04057d2f
 
 If it is not clear please check image below.
 
-image
+image:::https://prismic-io.s3.amazonaws.com/lunatech/4694105fa7ee7fd867da04057d2fae977d89cdbc_yue1.png[]
 
 In most common cases, ReqIn is equal to ReqOut, and RepIn is equal to RepOut. So we have this SimpleFilter class
 
