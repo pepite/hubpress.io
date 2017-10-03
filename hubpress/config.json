@@ -32,7 +32,7 @@
   },
   "urls": {
     "site": "https://pepite.github.io/hubpress.io",
-    "hubpress": "http://blog.lunatech.com/hubpress.io",
+    "hubpress": "https://pepite.github.io/hubpress.io",
     "theme": "//pepite.github.io/hubpress.io/themes/casper",
     "images": "https://pepite.github.io/hubpress.io/images"
   },
